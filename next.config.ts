@@ -6,8 +6,9 @@ const withNextIntl = createNextIntlPlugin('./i18n/request.ts');
 const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
-      // Supabase storage — update the hostname once your project URL is set
       { protocol: 'https', hostname: '*.supabase.co' },
+      { protocol: 'https', hostname: 'picsum.photos' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
   },
 };
