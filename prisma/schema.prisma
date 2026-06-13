@@ -1,0 +1,25 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// Single-row settings tables use id = 1 as the stable primary key.
+
+model ThemeSettings {
+  id               Int    @id @default(1)
+  colorPrimary     String @default("#5ba3c9")
+  colorPrimaryLight String @default("#e8f4f9")
+  colorAccent      String @default("#4d9b72")
+  colorAccentHover String @default("#3c7c5a")
+  colorBg          String @default("#ffffff")
+  colorText        String @default("#1c3040")
+  colorTextMuted   String @default("#4a6a7a")
+  fontHeading      String @default("var(--font-fraunces), Georgia, serif")
+  fontBody         String @default("var(--font-vazirmatn), system-ui, sans-serif")
+}

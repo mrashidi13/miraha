@@ -1,0 +1,25 @@
+{
+  "site": {
+    "name": "Miraha",
+    "tagline": "Preserving the language and memory of our village"
+  },
+  "nav": {
+    "dictionary": "Dictionary",
+    "proverbs": "Proverbs",
+    "news": "News",
+    "gallery": "Gallery",
+    "events": "Events",
+    "people": "People",
+    "map": "Map",
+    "about": "About"
+  },
+  "home": {
+    "welcome": "Welcome to Miraha",
+    "subtitle": "A living archive of our village's language, stories, and heritage"
+  },
+  "common": {
+    "search": "Search",
+    "loading": "Loading…",
+    "learnMore": "Learn more"
+  }
+}

@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/*
+  Design tokens are defined as CSS custom properties on :root by the locale
+  layout (injected from lib/theme.ts, later from the ThemeSettings DB row).
+  The @theme block below registers them as Tailwind utilities so that classes
+  like bg-primary, text-accent, font-heading are available everywhere.
+*/
+@theme {
+  --color-primary: #5ba3c9;
+  --color-primary-light: #e8f4f9;
+  --color-accent: #4d9b72;
+  --color-accent-hover: #3c7c5a;
+  --color-bg: #ffffff;
+  --color-text: #1c3040;
+  --color-text-muted: #4a6a7a;
+
+  --font-heading: var(--font-fraunces), Georgia, serif;
+  --font-body: var(--font-vazirmatn), system-ui, sans-serif;
+}
+
+html {
+  background-color: var(--color-bg, #ffffff);
+  color: var(--color-text, #1c3040);
+}
+
+body {
+  font-family: var(--font-body);
+  min-height: 100vh;
+}

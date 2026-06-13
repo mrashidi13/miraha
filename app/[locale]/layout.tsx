@@ -1,0 +1,76 @@
+import type { ReactNode } from 'react';
+import type { Metadata } from 'next';
+import { NextIntlClientProvider } from 'next-intl';
+import { getMessages, getTranslations } from 'next-intl/server';
+import { notFound } from 'next/navigation';
+import { Fraunces, Vazirmatn } from 'next/font/google';
+import { routing } from '@/i18n/routing';
+import { defaultTheme, buildThemeCssVars } from '@/lib/theme';
+import '../globals.css';
+
+const fraunces = Fraunces({
+  subsets: ['latin'],
+  variable: '--font-fraunces',
+  display: 'swap',
+});
+
+const vazirmatn = Vazirmatn({
+  subsets: ['arabic'],
+  variable: '--font-vazirmatn',
+  display: 'swap',
+});
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'site' });
+  return {
+    title: t('name'),
+    description: t('tagline'),
+  };
+}
+
+export function generateStaticParams() {
+  return routing.locales.map((locale) => ({ locale }));
+}
+
+export default async function LocaleLayout({
+  children,
+  params,
+}: {
+  children: ReactNode;
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+
+  if (!routing.locales.includes(locale as (typeof routing.locales)[number])) {
+    notFound();
+  }
+
+  const messages = await getMessages();
+  const dir = locale === 'fa' ? 'rtl' : 'ltr';
+
+  // Phase 0: read from the typed config. Phase 1+ will fetch from ThemeSettings DB row.
+  const theme = defaultTheme;
+  const themeVars = buildThemeCssVars(theme);
+
+  return (
+    <html
+      lang={locale}
+      dir={dir}
+      className={`${fraunces.variable} ${vazirmatn.variable}`}
+    >
+      <head>
+        <style>{`:root { ${themeVars}; }`}</style>
+      </head>
+      <body className="min-h-screen flex flex-col">
+        <NextIntlClientProvider messages={messages}>
+          {children}
+        </NextIntlClientProvider>
+      </body>
+    </html>
+  );
+}
