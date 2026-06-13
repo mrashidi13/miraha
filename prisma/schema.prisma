@@ -37,7 +37,7 @@ enum UserRole {
 // ---------------------------------------------------------------------------
 
 model User {
-  id        String   @id @default(cuid())
+  id        String   @id         // Supabase Auth UUID — set explicitly on upsert
   email     String   @unique
   name      String
   role      UserRole @default(member)

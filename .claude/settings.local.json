@@ -28,7 +28,12 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/dictionary)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/news)",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/admin)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/admin/appearance)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/admin/appearance)",
+      "Bash(git commit *)",
+      "Bash(curl -s -o /dev/null -w \"login: %{http_code}\\\\n\" http://localhost:3000/en/login)",
+      "Bash(curl -s -o /dev/null -w \"profile: %{http_code}\\\\n\" http://localhost:3000/en/profile)",
+      "Bash(curl -s -o /dev/null -w \"admin \\(no session\\): %{http_code} → %{redirect_url}\\\\n\" -L -o /dev/null http://localhost:3000/en/admin)",
+      "Bash(kill %1)"
     ]
   }
 }

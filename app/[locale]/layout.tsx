@@ -7,6 +7,8 @@ import { Fraunces, Vazirmatn } from 'next/font/google';
 import { routing } from '@/i18n/routing';
 import { buildThemeCssVars } from '@/lib/theme';
 import { getTheme } from '@/lib/db/settings';
+import { getServerUser } from '@/lib/supabase/server';
+import { getUserById } from '@/lib/db/users';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import '../globals.css';
@@ -52,8 +54,12 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
   const dir = locale === 'fa' ? 'rtl' : 'ltr';
-  const theme = await getTheme();
+
+  const [theme, supabaseUser] = await Promise.all([getTheme(), getServerUser()]);
   const themeVars = buildThemeCssVars(theme);
+
+  const dbUser = supabaseUser ? await getUserById(supabaseUser.id) : null;
+  const isAdmin = dbUser?.role === 'admin';
 
   return (
     <html lang={locale} dir={dir} className={`${fraunces.variable} ${vazirmatn.variable}`}>
@@ -62,7 +68,7 @@ export default async function LocaleLayout({
       </head>
       <body className="min-h-screen flex flex-col bg-bg text-text">
         <NextIntlClientProvider messages={messages}>
-          <SiteHeader />
+          <SiteHeader userEmail={supabaseUser?.email} isAdmin={isAdmin} />
           <main className="flex flex-col flex-1">{children}</main>
           <SiteFooter />
         </NextIntlClientProvider>
