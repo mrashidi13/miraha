@@ -2,6 +2,7 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { HeroSlideshow } from '@/components/HeroSlideshow';
+import { LiveSearch } from '@/components/ui/LiveSearch';
 import { getHero } from '@/lib/db/settings';
 import { getWords } from '@/lib/db/words';
 import { getProverbs } from '@/lib/db/proverbs';
@@ -35,8 +36,6 @@ export default async function HomePage({
     getMedia('photo'),
   ]);
 
-  const featuredWords = words.slice(0, 6);
-  const featuredProverbs = proverbs.slice(0, 3);
   const featuredNews = news.slice(0, 3);
   const featuredPhotos = photos.slice(0, 6);
 
@@ -77,54 +76,8 @@ export default async function HomePage({
         </div>
       </section>
 
-      {/* ── Dictionary ────────────────────────────────────────────────────── */}
-      {featuredWords.length > 0 && (
-        <section className="bg-primary-light py-14 px-4">
-          <div className="max-w-5xl mx-auto">
-            <SectionHeader
-              en="Dictionary"
-              fa="واژه‌نامه"
-              subEn="Words from the village language — preserved for generations to come"
-              subFa="واژه‌هایی از زبان محلی روستا — نگهداری‌شده برای نسل‌های آینده"
-              isFa={isFa}
-              href="/dictionary"
-              linkEn="View all words"
-              linkFa="همه واژه‌ها"
-            />
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featuredWords.map((w) => (
-                <Link
-                  key={w.id}
-                  href={`/dictionary/${w.id}`}
-                  className="bg-bg rounded-2xl border border-primary/20 hover:border-primary/50 hover:shadow-sm transition-all overflow-hidden group"
-                >
-                  {w.photoUrl && (
-                    <div className="relative h-36 w-full overflow-hidden">
-                      <Image
-                        src={w.photoUrl}
-                        alt={w.term}
-                        fill
-                        className="object-cover group-hover:scale-105 transition-transform duration-500"
-                      />
-                    </div>
-                  )}
-                  <div className="p-4">
-                    <div className="flex items-baseline gap-2 mb-1">
-                      <span className="font-heading text-xl font-bold text-primary">{w.term}</span>
-                      {w.pronunciation && (
-                        <span className="text-xs text-text-muted font-body">/{w.pronunciation}/</span>
-                      )}
-                    </div>
-                    <p className="text-sm text-text font-body line-clamp-2">
-                      {isFa ? w.meaningFa : w.meaningEn}
-                    </p>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
+      {/* ── Live search: Dictionary + Proverbs ───────────────────────────── */}
+      <LiveSearch words={words} proverbs={proverbs} locale={locale} />
 
       {/* ── Gallery ───────────────────────────────────────────────────────── */}
       {featuredPhotos.length > 0 && (
@@ -219,40 +172,6 @@ export default async function HomePage({
         </section>
       )}
 
-      {/* ── Proverbs ─────────────────────────────────────────────────────── */}
-      {featuredProverbs.length > 0 && (
-        <section className="bg-bg py-14 px-4">
-          <div className="max-w-4xl mx-auto">
-            <SectionHeader
-              en="Proverbs"
-              fa="ضرب‌المثل‌ها"
-              subEn="Wisdom passed down through generations of village life"
-              subFa="حکمتی که نسل‌ها در زندگی روستایی به ارث رسیده"
-              isFa={isFa}
-              href="/proverbs"
-              linkEn="View all proverbs"
-              linkFa="همه ضرب‌المثل‌ها"
-            />
-            <div className="grid sm:grid-cols-3 gap-5">
-              {featuredProverbs.map((p) => (
-                <Link
-                  key={p.id}
-                  href={`/proverbs/${p.id}`}
-                  className="bg-primary-light rounded-2xl border border-primary/20 hover:border-primary/50 p-5 transition-all group"
-                >
-                  <span className="text-3xl text-primary/30 font-heading leading-none select-none">"</span>
-                  <p className="font-heading text-base font-semibold text-primary mt-1 mb-3 leading-snug">
-                    {isFa ? p.textFa : p.textEn}
-                  </p>
-                  <p className="text-sm text-text-muted font-body line-clamp-2">
-                    {isFa ? p.meaningFa : p.meaningEn}
-                  </p>
-                </Link>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
     </>
   );
 }
