@@ -1,25 +1,208 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../node_modules/.prisma/client"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
 }
 
-// Single-row settings tables use id = 1 as the stable primary key.
+// ---------------------------------------------------------------------------
+// Content status
+// ---------------------------------------------------------------------------
+
+enum ContentStatus {
+  approved
+  pending
+}
+
+enum MediaType {
+  photo
+  video
+  audio
+}
+
+enum TargetType {
+  word
+  proverb
+  news
+}
+
+enum UserRole {
+  admin
+  member
+}
+
+// ---------------------------------------------------------------------------
+// Users (auth wired in Phase 2 — nullable foreign keys below)
+// ---------------------------------------------------------------------------
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  role      UserRole @default(member)
+  avatarUrl String?
+  createdAt DateTime @default(now())
+
+  words     Word[]
+  proverbs  Proverb[]
+  news      News[]
+  favorites Favorite[]
+  comments  Comment[]
+}
+
+// ---------------------------------------------------------------------------
+// Heritage content
+// ---------------------------------------------------------------------------
+
+model Word {
+  id            String        @id @default(cuid())
+  term          String
+  pronunciation String?
+  meaningEn     String
+  meaningFa     String
+  exampleEn     String?
+  exampleFa     String?
+  audioUrl      String?
+  photoUrl      String?
+  status        ContentStatus @default(approved)
+  submittedBy   User?         @relation(fields: [submittedById], references: [id])
+  submittedById String?
+  createdAt     DateTime      @default(now())
+
+  favorites Favorite[]
+  comments  Comment[]
+}
+
+model Proverb {
+  id            String        @id @default(cuid())
+  textEn        String
+  textFa        String
+  meaningEn     String
+  meaningFa     String
+  usageEn       String?
+  usageFa       String?
+  audioUrl      String?
+  status        ContentStatus @default(approved)
+  submittedBy   User?         @relation(fields: [submittedById], references: [id])
+  submittedById String?
+  createdAt     DateTime      @default(now())
+
+  comments Comment[]
+}
+
+model News {
+  id          String   @id @default(cuid())
+  titleEn     String
+  titleFa     String
+  bodyEn      String
+  bodyFa      String
+  imageUrl    String?
+  publishedAt DateTime @default(now())
+  author      User?    @relation(fields: [authorId], references: [id])
+  authorId    String?
+
+  comments Comment[]
+}
+
+model MediaItem {
+  id        String    @id @default(cuid())
+  type      MediaType
+  url       String
+  captionEn String?
+  captionFa String?
+  takenAt   DateTime?
+  createdAt DateTime  @default(now())
+}
+
+model Event {
+  id            String   @id @default(cuid())
+  titleEn       String
+  titleFa       String
+  descriptionEn String?
+  descriptionFa String?
+  startsAt      DateTime
+  endsAt        DateTime?
+  location      String?
+}
+
+model Person {
+  id         String  @id @default(cuid())
+  nameEn     String
+  nameFa     String
+  roleEn     String?
+  roleFa     String?
+  locationEn String?
+  locationFa String?
+  photoUrl   String?
+}
+
+// ---------------------------------------------------------------------------
+// Community (Phase 3+)
+// ---------------------------------------------------------------------------
+
+model Favorite {
+  id        String   @id @default(cuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  word      Word     @relation(fields: [wordId], references: [id])
+  wordId    String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, wordId])
+}
+
+model Comment {
+  id         String     @id @default(cuid())
+  body       String
+  user       User       @relation(fields: [userId], references: [id])
+  userId     String
+  targetType TargetType
+  targetId   String
+  createdAt  DateTime   @default(now())
+
+  word    Word?    @relation(fields: [targetId], references: [id], map: "comment_word_fk")
+  proverb Proverb? @relation(fields: [targetId], references: [id], map: "comment_proverb_fk")
+  news    News?    @relation(fields: [targetId], references: [id], map: "comment_news_fk")
+}
+
+// ---------------------------------------------------------------------------
+// Site-wide settings (single-row tables; id = 1)
+// ---------------------------------------------------------------------------
+
+model HeroSettings {
+  id         Int      @id @default(1)
+  imageUrls  String[] @default([])
+  eyebrowEn  String   @default("Welcome to our village")
+  eyebrowFa  String   @default("به روستای ما خوش آمدید")
+  titleEn    String   @default("Miraha")
+  titleFa    String   @default("میراها")
+  subtitleEn String   @default("Preserving the language and memory of our village")
+  subtitleFa String   @default("پاسداری از زبان و خاطرات روستای ما")
+}
+
+model MapSettings {
+  id               Int    @id @default(1)
+  embedUrl         String @default("")
+  directionsTextEn String @default("")
+  directionsTextFa String @default("")
+}
+
+model AboutSettings {
+  id     Int    @id @default(1)
+  bodyEn String @default("")
+  bodyFa String @default("")
+}
 
 model ThemeSettings {
-  id               Int    @id @default(1)
-  colorPrimary     String @default("#5ba3c9")
+  id                Int    @id @default(1)
+  colorPrimary      String @default("#5ba3c9")
   colorPrimaryLight String @default("#e8f4f9")
-  colorAccent      String @default("#4d9b72")
-  colorAccentHover String @default("#3c7c5a")
-  colorBg          String @default("#ffffff")
-  colorText        String @default("#1c3040")
-  colorTextMuted   String @default("#4a6a7a")
-  fontHeading      String @default("var(--font-fraunces), Georgia, serif")
-  fontBody         String @default("var(--font-vazirmatn), system-ui, sans-serif")
+  colorAccent       String @default("#4d9b72")
+  colorAccentHover  String @default("#3c7c5a")
+  colorBg           String @default("#ffffff")
+  colorText         String @default("#1c3040")
+  colorTextMuted    String @default("#4a6a7a")
+  fontHeading       String @default("var(--font-fraunces), Georgia, serif")
+  fontBody          String @default("var(--font-vazirmatn), system-ui, sans-serif")
 }

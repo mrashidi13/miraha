@@ -13,7 +13,22 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{redirect_url}\" http://localhost:3000/)",
       "Bash(curl -s http://localhost:3000/en)",
       "Bash(git init *)",
-      "Bash(git add *)"
+      "Bash(git add *)",
+      "Bash(git branch *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git config *)",
+      "Bash(psql --version)",
+      "Bash(pg_isready)",
+      "Bash(timeout 10 npx prisma dev)",
+      "Bash(nc -z localhost 51214)",
+      "Bash(npx prisma *)",
+      "Bash(npm install *)",
+      "Bash(node -e ' *)",
+      "Bash(npx dotenv *)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/dictionary)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/news)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/admin)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:3000/en/admin/appearance)"
     ]
   }
 }

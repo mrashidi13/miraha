@@ -5,7 +5,10 @@ import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { Fraunces, Vazirmatn } from 'next/font/google';
 import { routing } from '@/i18n/routing';
-import { defaultTheme, buildThemeCssVars } from '@/lib/theme';
+import { buildThemeCssVars } from '@/lib/theme';
+import { getTheme } from '@/lib/db/settings';
+import { SiteHeader } from '@/components/layout/SiteHeader';
+import { SiteFooter } from '@/components/layout/SiteFooter';
 import '../globals.css';
 
 const fraunces = Fraunces({
@@ -27,10 +30,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const t = await getTranslations({ locale, namespace: 'site' });
-  return {
-    title: t('name'),
-    description: t('tagline'),
-  };
+  return { title: { default: t('name'), template: `%s · ${t('name')}` }, description: t('tagline') };
 }
 
 export function generateStaticParams() {
@@ -52,23 +52,19 @@ export default async function LocaleLayout({
 
   const messages = await getMessages();
   const dir = locale === 'fa' ? 'rtl' : 'ltr';
-
-  // Phase 0: read from the typed config. Phase 1+ will fetch from ThemeSettings DB row.
-  const theme = defaultTheme;
+  const theme = await getTheme();
   const themeVars = buildThemeCssVars(theme);
 
   return (
-    <html
-      lang={locale}
-      dir={dir}
-      className={`${fraunces.variable} ${vazirmatn.variable}`}
-    >
+    <html lang={locale} dir={dir} className={`${fraunces.variable} ${vazirmatn.variable}`}>
       <head>
         <style>{`:root { ${themeVars}; }`}</style>
       </head>
-      <body className="min-h-screen flex flex-col">
+      <body className="min-h-screen flex flex-col bg-bg text-text">
         <NextIntlClientProvider messages={messages}>
-          {children}
+          <SiteHeader />
+          <main className="flex flex-col flex-1">{children}</main>
+          <SiteFooter />
         </NextIntlClientProvider>
       </body>
     </html>
