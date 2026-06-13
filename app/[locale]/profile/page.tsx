@@ -57,6 +57,15 @@ export default async function ProfilePage({
           </div>
         </div>
 
+        <div className="pt-2 border-t border-primary/10">
+          <a
+            href={`/${locale}/profile/favorites`}
+            className="text-sm font-body text-primary hover:underline"
+          >
+            {isFa ? '♥ واژه‌های ذخیره‌شده' : '♥ Favorite Words'}
+          </a>
+        </div>
+
         {dbUser?.role === 'admin' && (
           <div className="pt-2 border-t border-primary/10">
             <a

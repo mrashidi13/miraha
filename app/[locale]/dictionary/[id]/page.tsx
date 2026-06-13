@@ -1,6 +1,9 @@
 import { notFound } from 'next/navigation';
 import { getWord } from '@/lib/db/words';
+import { getFavorite } from '@/lib/db/favorites';
+import { getServerUser } from '@/lib/supabase/server';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
+import { FavoriteButton } from '@/components/ui/FavoriteButton';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import type { Metadata } from 'next';
@@ -14,8 +17,11 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 export default async function WordPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
   const { locale, id } = await params;
   const isFa = locale === 'fa';
-  const word = await getWord(id);
+
+  const [word, user] = await Promise.all([getWord(id), getServerUser()]);
   if (!word) notFound();
+
+  const isFavorited = user ? !!(await getFavorite(user.id, word.id)) : false;
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 w-full">
@@ -31,7 +37,12 @@ export default async function WordPage({ params }: { params: Promise<{ locale: s
               <p className="text-text-muted font-body text-sm mt-1">/{word.pronunciation}/</p>
             )}
           </div>
-          {word.audioUrl && <AudioPlayer src={word.audioUrl} />}
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {word.audioUrl && <AudioPlayer src={word.audioUrl} />}
+            {user && (
+              <FavoriteButton wordId={word.id} initialFavorited={isFavorited} locale={locale} />
+            )}
+          </div>
         </div>
 
         {word.photoUrl && (
@@ -58,6 +69,15 @@ export default async function WordPage({ params }: { params: Promise<{ locale: s
           )}
         </div>
       </div>
+
+      {!user && (
+        <p className="text-center text-sm text-text-muted font-body mt-6">
+          <Link href="/login" className="text-accent hover:underline">
+            {isFa ? 'وارد شوید' : 'Sign in'}
+          </Link>{' '}
+          {isFa ? 'تا این واژه را ذخیره کنید.' : 'to save this word to your favorites.'}
+        </p>
+      )}
     </div>
   );
 }

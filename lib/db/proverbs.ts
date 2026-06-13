@@ -15,6 +15,7 @@ export function createProverb(data: {
   usageEn?: string; usageFa?: string;
   audioUrl?: string;
   status?: ContentStatus;
+  submittedById?: string;
 }) {
   return prisma.proverb.create({ data });
 }

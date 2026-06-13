@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getWord } from '@/lib/db/words';
-import { actionUpdateWord, actionDeleteWord } from '@/app/actions/words';
+import { actionUpdateWord, actionDeleteWord, actionApproveWord, actionRejectWord } from '@/app/actions/words';
 import { SubmitButton } from '@/components/admin/SubmitButton';
 import { DeleteButton } from '@/components/admin/DeleteButton';
 import { InputField, TextareaField } from '@/components/admin/FieldRow';
@@ -13,6 +13,8 @@ export default async function EditWordPage({ params }: { params: Promise<{ id: s
 
   const updateWithId = actionUpdateWord.bind(null, id);
   const deleteWithId = actionDeleteWord.bind(null, id);
+  const approveWithId = actionApproveWord.bind(null, id);
+  const rejectWithId = actionRejectWord.bind(null, id);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 w-full">
@@ -20,6 +22,32 @@ export default async function EditWordPage({ params }: { params: Promise<{ id: s
         ← Back to Words
       </Link>
       <h1 className="font-heading text-2xl font-bold text-primary mb-6">Edit: {word.term}</h1>
+
+      {word.status === 'pending' && (
+        <div className="mb-6 p-4 rounded-xl bg-yellow-50 border border-yellow-200">
+          <p className="text-sm font-body text-yellow-800 font-semibold mb-3">
+            ⏳ Pending approval — submitted by a member
+          </p>
+          <div className="flex gap-3">
+            <form action={approveWithId}>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-lg bg-accent text-white text-sm font-body hover:bg-accent-hover transition-colors"
+              >
+                Approve
+              </button>
+            </form>
+            <form action={rejectWithId}>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-lg border border-red-300 text-red-600 text-sm font-body hover:bg-red-50 transition-colors"
+              >
+                Reject &amp; Delete
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
 
       <form action={updateWithId} className="space-y-4 bg-bg border border-primary/20 rounded-2xl p-6 mb-4">
         <div className="grid sm:grid-cols-2 gap-4">

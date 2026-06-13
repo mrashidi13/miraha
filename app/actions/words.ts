@@ -3,6 +3,7 @@
 import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createWord, updateWord, deleteWord } from '@/lib/db/words';
+import { getServerUser } from '@/lib/supabase/server';
 
 export async function actionCreateWord(formData: FormData) {
   const word = await createWord({
@@ -39,4 +40,36 @@ export async function actionDeleteWord(id: string) {
   await deleteWord(id);
   revalidatePath('/[locale]/dictionary', 'page');
   redirect('/en/admin/words');
+}
+
+export async function actionApproveWord(id: string) {
+  await updateWord(id, { status: 'approved' });
+  revalidatePath('/[locale]/dictionary', 'page');
+  redirect('/en/admin/words');
+}
+
+export async function actionRejectWord(id: string) {
+  await deleteWord(id);
+  revalidatePath('/[locale]/dictionary', 'page');
+  redirect('/en/admin/words');
+}
+
+export async function actionSuggestWord(locale: string, formData: FormData) {
+  const user = await getServerUser();
+  if (!user) redirect(`/${locale}/login`);
+
+  const meaningEn = (formData.get('meaningEn') as string).trim();
+
+  await createWord({
+    term: formData.get('term') as string,
+    pronunciation: (formData.get('pronunciation') as string) || undefined,
+    meaningFa: formData.get('meaningFa') as string,
+    meaningEn: meaningEn || '—',
+    exampleFa: (formData.get('exampleFa') as string) || undefined,
+    exampleEn: (formData.get('exampleEn') as string) || undefined,
+    status: 'pending',
+    submittedById: user.id,
+  });
+
+  redirect(`/${locale}/dictionary?suggested=1`);
 }

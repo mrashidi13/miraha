@@ -34,6 +34,7 @@ export function createWord(data: {
   audioUrl?: string;
   photoUrl?: string;
   status?: ContentStatus;
+  submittedById?: string;
 }) {
   return prisma.word.create({ data });
 }
