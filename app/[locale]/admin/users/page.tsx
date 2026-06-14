@@ -55,6 +55,11 @@ export default async function AdminUsersPage() {
                   checked={u.canPublishMedia}
                   action={actionTogglePermission.bind(null, u.id, 'canPublishMedia', !u.canPublishMedia)}
                 />
+                <PermissionToggle
+                  label="Moderate Comments"
+                  checked={u.canModerateComments}
+                  action={actionTogglePermission.bind(null, u.id, 'canModerateComments', !u.canModerateComments)}
+                />
                 <form action={actionSetUserRole.bind(null, u.id, 'admin')}>
                   <button
                     type="submit"

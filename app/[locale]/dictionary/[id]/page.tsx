@@ -5,6 +5,7 @@ import { getFavorite } from '@/lib/db/favorites';
 import { getServerUser } from '@/lib/supabase/server';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
+import { CommentSection } from '@/components/ui/CommentSection';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import type { Metadata } from 'next';
@@ -15,8 +16,15 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
   return { title: word?.term ?? 'Word' };
 }
 
-export default async function WordPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
+export default async function WordPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<Record<string, string>>;
+}) {
   const { locale, id } = await params;
+  const sp = await searchParams;
   const isFa = locale === 'fa';
 
   const [word, user] = await Promise.all([getWord(id), getServerUser()]);
@@ -82,6 +90,8 @@ export default async function WordPage({ params }: { params: Promise<{ locale: s
           {isFa ? 'تا این واژه را ذخیره کنید.' : 'to save this word to your favorites.'}
         </p>
       )}
+
+      <CommentSection targetType="word" targetId={word.id} locale={locale} showSuccess={sp.commented === '1'} />
 
       {relatedProverbs.length > 0 && (
         <div className="mt-8">

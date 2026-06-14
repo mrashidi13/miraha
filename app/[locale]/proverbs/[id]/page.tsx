@@ -1,6 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getProverb } from '@/lib/db/proverbs';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
+import { CommentSection } from '@/components/ui/CommentSection';
 import { Link } from '@/i18n/navigation';
 import type { Metadata } from 'next';
 
@@ -10,8 +11,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: p?.textEn ?? 'Proverb' };
 }
 
-export default async function ProverbPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
+export default async function ProverbPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<Record<string, string>>;
+}) {
   const { locale, id } = await params;
+  const sp = await searchParams;
   const isFa = locale === 'fa';
   const p = await getProverb(id);
   if (!p) notFound();
@@ -43,6 +51,8 @@ export default async function ProverbPage({ params }: { params: Promise<{ locale
           )}
         </div>
       </div>
+
+      <CommentSection targetType="proverb" targetId={p.id} locale={locale} showSuccess={sp.commented === '1'} />
     </div>
   );
 }

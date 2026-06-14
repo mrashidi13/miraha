@@ -42,9 +42,10 @@ model User {
   name               String
   role               UserRole @default(member)
   avatarUrl          String?
-  canPublishWords    Boolean  @default(false)
-  canPublishProverbs Boolean  @default(false)
-  canPublishMedia    Boolean  @default(false)
+  canPublishWords      Boolean  @default(false)
+  canPublishProverbs   Boolean  @default(false)
+  canPublishMedia      Boolean  @default(false)
+  canModerateComments  Boolean  @default(false)
   createdAt          DateTime @default(now())
 
   words     Word[]
@@ -169,13 +170,14 @@ model Favorite {
 }
 
 model Comment {
-  id         String     @id @default(cuid())
+  id         String        @id @default(cuid())
   body       String
-  user       User       @relation(fields: [userId], references: [id])
+  user       User          @relation(fields: [userId], references: [id])
   userId     String
   targetType TargetType
   targetId   String
-  createdAt  DateTime   @default(now())
+  status     ContentStatus @default(pending)
+  createdAt  DateTime      @default(now())
 
   word    Word?    @relation(fields: [targetId], references: [id], map: "comment_word_fk")
   proverb Proverb? @relation(fields: [targetId], references: [id], map: "comment_proverb_fk")

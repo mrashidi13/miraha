@@ -16,6 +16,7 @@ const ADMIN_LINKS = [
   { href: '/admin/hero', label: 'Hero' },
   { href: '/admin/settings', label: 'Settings' },
   { href: '/admin/appearance', label: 'Appearance' },
+  { href: '/admin/comments', label: 'Comments' },
   { href: '/admin/users', label: 'Users' },
 ] as const;
 

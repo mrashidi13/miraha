@@ -20,7 +20,7 @@ export async function actionSetUserRole(userId: string, role: UserRole) {
 
 export async function actionTogglePermission(
   userId: string,
-  field: 'canPublishWords' | 'canPublishProverbs' | 'canPublishMedia',
+  field: 'canPublishWords' | 'canPublishProverbs' | 'canPublishMedia' | 'canModerateComments',
   value: boolean,
 ) {
   await assertAdmin();
