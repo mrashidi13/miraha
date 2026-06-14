@@ -199,6 +199,22 @@ model HeroSettings {
   subtitleFa String   @default("پاسداری از زبان و خاطرات روستای ما")
 }
 
+model CommentSettings {
+  id              Int     @id @default(1)
+  wordsEnabled    Boolean @default(true)
+  proverbsEnabled Boolean @default(true)
+  newsEnabled     Boolean @default(true)
+}
+
+model NewsletterSubscriber {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  name         String?
+  locale       String   @default("fa")
+  active       Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+}
+
 model MapSettings {
   id               Int    @id @default(1)
   embedUrl         String @default("")

@@ -1,5 +1,7 @@
 import { notFound } from 'next/navigation';
 import { getNewsItem } from '@/lib/db/news';
+import { getCommentSettings } from '@/lib/db/settings';
+import { CommentSection } from '@/components/ui/CommentSection';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import type { Metadata } from 'next';
@@ -10,10 +12,18 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   return { title: n ? (locale === 'fa' ? n.titleFa : n.titleEn) : 'News' };
 }
 
-export default async function NewsItemPage({ params }: { params: Promise<{ locale: string; id: string }> }) {
+export default async function NewsItemPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ locale: string; id: string }>;
+  searchParams: Promise<Record<string, string>>;
+}) {
   const { locale, id } = await params;
+  const sp = await searchParams;
   const isFa = locale === 'fa';
-  const n = await getNewsItem(id);
+
+  const [n, commentSettings] = await Promise.all([getNewsItem(id), getCommentSettings()]);
   if (!n) notFound();
 
   return (
@@ -39,6 +49,14 @@ export default async function NewsItemPage({ params }: { params: Promise<{ local
       <div className="font-body text-text leading-relaxed whitespace-pre-wrap">
         {isFa ? n.bodyFa : n.bodyEn}
       </div>
+
+      <CommentSection
+        targetType="news"
+        targetId={n.id}
+        locale={locale}
+        showSuccess={sp.commented === '1'}
+        enabled={commentSettings.newsEnabled}
+      />
     </div>
   );
 }

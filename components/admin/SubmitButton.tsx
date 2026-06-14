@@ -2,12 +2,12 @@
 
 import { useFormStatus } from 'react-dom';
 
-export function SubmitButton({ label = 'Save' }: { label?: string }) {
+export function SubmitButton({ label = 'Save', disabled }: { label?: string; disabled?: boolean }) {
   const { pending } = useFormStatus();
   return (
     <button
       type="submit"
-      disabled={pending}
+      disabled={pending || disabled}
       className="px-5 py-2 rounded-lg bg-accent text-white font-body text-sm hover:bg-accent-hover transition-colors disabled:opacity-60"
     >
       {pending ? 'Saving…' : label}

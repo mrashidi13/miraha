@@ -1,5 +1,7 @@
 import { getPendingComments } from '@/lib/db/comments';
+import { getCommentSettings } from '@/lib/db/settings';
 import { actionApproveComment, actionDeleteComment } from '@/app/actions/comments';
+import { actionToggleCommentSection } from '@/app/actions/comment-settings';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = { title: 'Comment Moderation' };
@@ -11,13 +13,56 @@ export default async function AdminCommentsPage({
 }) {
   const { locale } = await params;
   const isFa = locale === 'fa';
-  const pending = await getPendingComments();
+
+  const [pending, settings] = await Promise.all([getPendingComments(), getCommentSettings()]);
+
+  const sections: { field: 'wordsEnabled' | 'proverbsEnabled' | 'newsEnabled'; en: string; fa: string }[] = [
+    { field: 'wordsEnabled',    en: 'Dictionary comments',  fa: 'نظرات واژه‌نامه' },
+    { field: 'proverbsEnabled', en: 'Proverb comments',     fa: 'نظرات ضرب‌المثل‌ها' },
+    { field: 'newsEnabled',     en: 'News comments',        fa: 'نظرات اخبار' },
+  ];
 
   return (
     <div className="max-w-3xl mx-auto py-8 px-4">
       <h1 className="font-heading text-2xl font-bold text-primary mb-6">
         {isFa ? 'مدیریت نظرات' : 'Comment Moderation'}
       </h1>
+
+      {/* ── Per-section toggles ───────────────────────────────────────────── */}
+      <div className="bg-bg border border-primary/20 rounded-2xl p-5 mb-8">
+        <h2 className="font-heading text-sm font-semibold text-primary mb-4">
+          {isFa ? 'فعال‌سازی نظرات به تفکیک بخش' : 'Enable comments by section'}
+        </h2>
+        <div className="flex flex-wrap gap-3">
+          {sections.map(({ field, en, fa }) => {
+            const enabled = settings[field];
+            const toggle = actionToggleCommentSection.bind(null, field, !enabled);
+            return (
+              <form key={field} action={toggle}>
+                <button
+                  type="submit"
+                  className={`inline-flex items-center gap-2 text-sm px-4 py-2 rounded-xl border font-body transition-colors ${
+                    enabled
+                      ? 'bg-accent text-white border-accent hover:bg-accent-hover'
+                      : 'border-primary/30 text-text-muted hover:border-primary hover:text-primary'
+                  }`}
+                >
+                  <span className={`w-2 h-2 rounded-full flex-shrink-0 ${enabled ? 'bg-white' : 'bg-text-muted/40'}`} />
+                  {isFa ? fa : en}
+                </button>
+              </form>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* ── Pending queue ────────────────────────────────────────────────── */}
+      <h2 className="font-heading text-base font-semibold text-primary mb-4">
+        {isFa ? 'در انتظار تأیید' : 'Pending approval'}
+        {pending.length > 0 && (
+          <span className="ms-2 text-sm font-body font-normal text-text-muted">({pending.length})</span>
+        )}
+      </h2>
 
       {pending.length === 0 ? (
         <div className="rounded-2xl border border-primary/20 bg-bg p-8 text-center text-text-muted font-body text-sm">

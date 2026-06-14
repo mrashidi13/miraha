@@ -70,7 +70,7 @@ export default async function LocaleLayout({
         <NextIntlClientProvider messages={messages}>
           <SiteHeader userEmail={supabaseUser?.email} isAdmin={isAdmin} />
           <main className="flex flex-col flex-1">{children}</main>
-          <SiteFooter />
+          <SiteFooter locale={locale} />
         </NextIntlClientProvider>
       </body>
     </html>

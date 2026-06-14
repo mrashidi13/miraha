@@ -3,6 +3,7 @@ import { getWord } from '@/lib/db/words';
 import { getProverbsContaining } from '@/lib/db/proverbs';
 import { getFavorite } from '@/lib/db/favorites';
 import { getServerUser } from '@/lib/supabase/server';
+import { getCommentSettings } from '@/lib/db/settings';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
 import { FavoriteButton } from '@/components/ui/FavoriteButton';
 import { CommentSection } from '@/components/ui/CommentSection';
@@ -27,7 +28,7 @@ export default async function WordPage({
   const sp = await searchParams;
   const isFa = locale === 'fa';
 
-  const [word, user] = await Promise.all([getWord(id), getServerUser()]);
+  const [word, user, commentSettings] = await Promise.all([getWord(id), getServerUser(), getCommentSettings()]);
   if (!word) notFound();
 
   const [isFavorited, relatedProverbs] = await Promise.all([
@@ -91,7 +92,7 @@ export default async function WordPage({
         </p>
       )}
 
-      <CommentSection targetType="word" targetId={word.id} locale={locale} showSuccess={sp.commented === '1'} />
+      <CommentSection targetType="word" targetId={word.id} locale={locale} showSuccess={sp.commented === '1'} enabled={commentSettings.wordsEnabled} />
 
       {relatedProverbs.length > 0 && (
         <div className="mt-8">

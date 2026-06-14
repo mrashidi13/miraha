@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getProverb } from '@/lib/db/proverbs';
+import { getCommentSettings } from '@/lib/db/settings';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
 import { CommentSection } from '@/components/ui/CommentSection';
 import { Link } from '@/i18n/navigation';
@@ -21,7 +22,7 @@ export default async function ProverbPage({
   const { locale, id } = await params;
   const sp = await searchParams;
   const isFa = locale === 'fa';
-  const p = await getProverb(id);
+  const [p, commentSettings] = await Promise.all([getProverb(id), getCommentSettings()]);
   if (!p) notFound();
 
   return (
@@ -52,7 +53,7 @@ export default async function ProverbPage({
         </div>
       </div>
 
-      <CommentSection targetType="proverb" targetId={p.id} locale={locale} showSuccess={sp.commented === '1'} />
+      <CommentSection targetType="proverb" targetId={p.id} locale={locale} showSuccess={sp.commented === '1'} enabled={commentSettings.proverbsEnabled} />
     </div>
   );
 }

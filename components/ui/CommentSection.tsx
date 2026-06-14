@@ -11,10 +11,21 @@ interface Props {
   targetId: string;
   locale: string;
   showSuccess?: boolean;
+  enabled?: boolean;
 }
 
-export async function CommentSection({ targetType, targetId, locale, showSuccess }: Props) {
+export async function CommentSection({ targetType, targetId, locale, showSuccess, enabled = true }: Props) {
   const isFa = locale === 'fa';
+
+  if (!enabled) {
+    return (
+      <div className="mt-10 border-t border-primary/10 pt-8">
+        <p className="text-sm text-text-muted font-body italic">
+          {isFa ? 'نظرات در این بخش غیرفعال است.' : 'Comments are disabled for this section.'}
+        </p>
+      </div>
+    );
+  }
 
   const supabaseUser = await getServerUser();
   const dbUser = supabaseUser ? await getUserById(supabaseUser.id) : null;

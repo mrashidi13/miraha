@@ -17,6 +17,7 @@ const ADMIN_LINKS = [
   { href: '/admin/settings', label: 'Settings' },
   { href: '/admin/appearance', label: 'Appearance' },
   { href: '/admin/comments', label: 'Comments' },
+  { href: '/admin/newsletter', label: 'Newsletter' },
   { href: '/admin/users', label: 'Users' },
 ] as const;
 

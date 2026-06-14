@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import type { ThemeSettings, HeroSettings, MapSettings, AboutSettings } from '@prisma/client';
+import type { ThemeSettings, HeroSettings, MapSettings, AboutSettings, CommentSettings } from '@prisma/client';
 
 // ---- Theme ----
 export async function getTheme(): Promise<ThemeSettings> {
@@ -55,6 +55,21 @@ export async function getAbout(): Promise<AboutSettings> {
 
 export function updateAbout(data: Partial<Omit<AboutSettings, 'id'>>) {
   return prisma.aboutSettings.upsert({
+    where: { id: 1 },
+    update: data,
+    create: { id: 1, ...data },
+  });
+}
+
+// ---- Comment settings ----
+export async function getCommentSettings(): Promise<CommentSettings> {
+  const row = await prisma.commentSettings.findUnique({ where: { id: 1 } });
+  if (row) return row;
+  return prisma.commentSettings.create({ data: { id: 1 } });
+}
+
+export function updateCommentSettings(data: Partial<Omit<CommentSettings, 'id'>>) {
+  return prisma.commentSettings.upsert({
     where: { id: 1 },
     update: data,
     create: { id: 1, ...data },
