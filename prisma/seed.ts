@@ -141,7 +141,46 @@ async function main() {
     await prisma.person.upsert({ where: { id: p.id }, update: { photoUrl: p.photoUrl }, create: p });
   }
 
-  console.log('✅ Seed complete — words, proverbs, news, gallery, events, people all seeded.');
+  // ── Albums ────────────────────────────────────────────────────────────────
+  const albumDefs = [
+    {
+      id: 'seed-album-1',
+      titleEn: 'Life Around the Qanat',
+      titleFa: 'زندگی در کنار قنات',
+      descriptionEn: 'Photos documenting the ancient qanat irrigation system and the daily life it sustains.',
+      descriptionFa: 'تصاویری از سیستم آبیاری قنات باستانی و زندگی روزمره‌ای که آن را پایدار نگه می‌دارد.',
+      photoIds: ['seed-gallery-2', 'seed-gallery-3'],
+    },
+    {
+      id: 'seed-album-2',
+      titleEn: 'Seasons & Celebrations',
+      titleFa: 'فصل‌ها و جشن‌ها',
+      descriptionEn: 'Harvest festivals, seasonal gatherings, and community celebrations across the year.',
+      descriptionFa: 'جشن برداشت، گردهمایی‌های فصلی و جشن‌های عمومی در طول سال.',
+      photoIds: ['seed-gallery-6', 'seed-gallery-4', 'seed-gallery-1'],
+    },
+    {
+      id: 'seed-album-3',
+      titleEn: 'Desert Sky & Landscape',
+      titleFa: 'آسمان و چشم‌انداز بیابان',
+      descriptionEn: 'The dramatic skies, golden sunsets, and endless sands that define our village\'s horizon.',
+      descriptionFa: 'آسمان‌های چشمگیر، غروب‌های طلایی و شن‌های بی‌کران که افق روستای ما را شکل می‌دهند.',
+      photoIds: ['seed-gallery-5', 'seed-gallery-8'],
+    },
+  ];
+
+  for (const a of albumDefs) {
+    await prisma.album.upsert({
+      where: { id: a.id },
+      update: { titleEn: a.titleEn, titleFa: a.titleFa, descriptionEn: a.descriptionEn, descriptionFa: a.descriptionFa },
+      create: { id: a.id, titleEn: a.titleEn, titleFa: a.titleFa, descriptionEn: a.descriptionEn, descriptionFa: a.descriptionFa },
+    });
+    for (const photoId of a.photoIds) {
+      await prisma.mediaItem.updateMany({ where: { id: photoId }, data: { albumId: a.id } });
+    }
+  }
+
+  console.log('✅ Seed complete — words, proverbs, news, gallery, albums, events, people all seeded.');
 }
 
 main()

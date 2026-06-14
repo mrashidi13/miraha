@@ -1,9 +1,12 @@
 import { prisma } from '@/lib/prisma';
 import type { MediaType } from '@prisma/client';
 
-export function getMedia(type?: MediaType) {
+export function getMedia(type?: MediaType, albumId?: string | null) {
   return prisma.mediaItem.findMany({
-    where: type ? { type } : undefined,
+    where: {
+      ...(type ? { type } : {}),
+      ...(albumId !== undefined ? { albumId } : {}),
+    },
     orderBy: { createdAt: 'desc' },
   });
 }
@@ -11,9 +14,13 @@ export function getMedia(type?: MediaType) {
 export function createMediaItem(data: {
   type: MediaType; url: string;
   captionEn?: string; captionFa?: string;
-  takenAt?: Date;
+  takenAt?: Date; albumId?: string;
 }) {
   return prisma.mediaItem.create({ data });
+}
+
+export function updateMediaItem(id: string, data: { albumId?: string | null }) {
+  return prisma.mediaItem.update({ where: { id }, data });
 }
 
 export function deleteMediaItem(id: string) {

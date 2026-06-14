@@ -10,6 +10,7 @@ const ADMIN_LINKS = [
   { href: '/admin/proverbs', label: 'Proverbs' },
   { href: '/admin/news', label: 'News' },
   { href: '/admin/media', label: 'Media' },
+  { href: '/admin/albums', label: 'Albums' },
   { href: '/admin/events', label: 'Events' },
   { href: '/admin/people', label: 'People' },
   { href: '/admin/hero', label: 'Hero' },

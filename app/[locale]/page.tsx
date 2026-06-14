@@ -8,6 +8,7 @@ import { getWords } from '@/lib/db/words';
 import { getProverbs } from '@/lib/db/proverbs';
 import { getAllNews } from '@/lib/db/news';
 import { getMedia } from '@/lib/db/media';
+import { getAlbums } from '@/lib/db/albums';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -28,17 +29,19 @@ export default async function HomePage({
   const { locale } = await params;
   const isFa = locale === 'fa';
 
-  const [hero, words, proverbs, news, photos, mapSettings] = await Promise.all([
+  const [hero, words, proverbs, news, photos, albums, mapSettings] = await Promise.all([
     getHero(),
     getWords({ status: 'approved' }),
     getProverbs('approved'),
     getAllNews(),
     getMedia('photo'),
+    getAlbums(),
     getMap(),
   ]);
 
   const featuredNews = news.slice(0, 3);
   const featuredPhotos = photos.slice(0, 6);
+  const featuredAlbums = albums.slice(0, 3);
 
   return (
     <>
@@ -80,13 +83,69 @@ export default async function HomePage({
       {/* ── Live search: Dictionary + Proverbs ───────────────────────────── */}
       <LiveSearch words={words} proverbs={proverbs} locale={locale} />
 
-      {/* ── Gallery ───────────────────────────────────────────────────────── */}
-      {featuredPhotos.length > 0 && (
+      {/* ── Latest Albums ─────────────────────────────────────────────────── */}
+      {featuredAlbums.length > 0 && (
         <section className="bg-bg py-14 px-4">
           <div className="max-w-5xl mx-auto">
             <SectionHeader
-              en="Gallery"
-              fa="گالری"
+              en="Latest Albums"
+              fa="آخرین آلبوم‌ها"
+              subEn="Collections of moments from village life"
+              subFa="مجموعه‌ای از لحظات زندگی روستا"
+              isFa={isFa}
+              href="/gallery"
+              linkEn="All albums"
+              linkFa="همه آلبوم‌ها"
+            />
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
+              {featuredAlbums.map((album) => {
+                const cover = album.coverUrl ?? album.media[0]?.url;
+                return (
+                  <Link
+                    key={album.id}
+                    href={`/gallery/album/${album.id}`}
+                    className="group rounded-2xl overflow-hidden border border-primary/20 hover:border-primary/50 hover:shadow-md transition-all bg-bg"
+                  >
+                    <div className="relative aspect-[4/3] bg-primary-light">
+                      {cover ? (
+                        <Image
+                          src={cover}
+                          alt={isFa ? album.titleFa : album.titleEn}
+                          fill
+                          className="object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-primary/30 text-3xl">🖼️</div>
+                      )}
+                      <span className="absolute top-2 end-2 bg-black/60 text-white text-xs font-body px-2 py-0.5 rounded-full">
+                        {album._count.media} {isFa ? 'تصویر' : 'photos'}
+                      </span>
+                    </div>
+                    <div className="p-3">
+                      <p className="font-heading font-semibold text-primary text-sm group-hover:text-primary/80 transition-colors">
+                        {isFa ? album.titleFa : album.titleEn}
+                      </p>
+                      {(album.descriptionEn || album.descriptionFa) && (
+                        <p className="text-xs text-text-muted font-body mt-0.5 line-clamp-1">
+                          {isFa ? album.descriptionFa : album.descriptionEn}
+                        </p>
+                      )}
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ── Latest Photos ─────────────────────────────────────────────────── */}
+      {featuredPhotos.length > 0 && (
+        <section className="bg-primary-light py-14 px-4">
+          <div className="max-w-5xl mx-auto">
+            <SectionHeader
+              en="Latest Photos"
+              fa="آخرین تصاویر"
               subEn="Moments from village life, across seasons and generations"
               subFa="لحظاتی از زندگی روستا، در فصل‌ها و نسل‌های مختلف"
               isFa={isFa}

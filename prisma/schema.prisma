@@ -108,6 +108,17 @@ model News {
   comments Comment[]
 }
 
+model Album {
+  id          String      @id @default(cuid())
+  titleEn     String
+  titleFa     String
+  descriptionEn String?
+  descriptionFa String?
+  coverUrl    String?
+  createdAt   DateTime    @default(now())
+  media       MediaItem[]
+}
+
 model MediaItem {
   id        String    @id @default(cuid())
   type      MediaType
@@ -116,6 +127,8 @@ model MediaItem {
   captionFa String?
   takenAt   DateTime?
   createdAt DateTime  @default(now())
+  albumId   String?
+  album     Album?    @relation(fields: [albumId], references: [id])
 }
 
 model Event {
