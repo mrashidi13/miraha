@@ -12,10 +12,12 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
+    "@dagrejs/dagre": "^3.0.0",
     "@prisma/adapter-pg": "^7.8.0",
     "@supabase/ssr": "^0.12.0",
     "@supabase/supabase-js": "^2.108.1",
     "@types/pg": "^8.20.0",
+    "@xyflow/react": "^12.11.0",
     "next": "16.2.9",
     "next-intl": "^4.13.0",
     "pg": "^8.21.0",

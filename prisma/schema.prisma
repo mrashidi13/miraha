@@ -152,6 +152,15 @@ model Person {
   locationEn String?
   locationFa String?
   photoUrl   String?
+  birthYear  Int?
+  deathYear  Int?
+
+  fatherId   String?
+  motherId   String?
+  father     Person?  @relation("PersonFather", fields: [fatherId], references: [id])
+  mother     Person?  @relation("PersonMother", fields: [motherId], references: [id])
+  childrenAsFather Person[] @relation("PersonFather")
+  childrenAsMother Person[] @relation("PersonMother")
 }
 
 // ---------------------------------------------------------------------------
