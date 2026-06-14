@@ -4,6 +4,7 @@ import { actionUpdatePerson, actionDeletePerson } from '@/app/actions/people';
 import { SubmitButton } from '@/components/admin/SubmitButton';
 import { DeleteButton } from '@/components/admin/DeleteButton';
 import { InputField } from '@/components/admin/FieldRow';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import { Link } from '@/i18n/navigation';
 
 export default async function EditPersonPage({ params }: { params: Promise<{ id: string }> }) {
@@ -29,7 +30,7 @@ export default async function EditPersonPage({ params }: { params: Promise<{ id:
           <InputField label="Location (English)" name="locationEn" defaultValue={p.locationEn ?? ''} />
           <InputField label="Location (Persian)" name="locationFa" defaultValue={p.locationFa ?? ''} />
         </div>
-        <InputField label="Photo URL" name="photoUrl" defaultValue={p.photoUrl ?? ''} type="url" />
+        <ImageUpload name="photoUrl" initialUrl={p.photoUrl ?? undefined} label="Photo" />
         <SubmitButton label="Save Changes" />
       </form>
       <form action={del}><DeleteButton /></form>

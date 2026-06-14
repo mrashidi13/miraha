@@ -1,6 +1,22 @@
 import { prisma } from '@/lib/prisma';
 import type { UserRole } from '@prisma/client';
 
+export function getAllUsers() {
+  return prisma.user.findMany({ orderBy: { createdAt: 'asc' } });
+}
+
+export function updateUserPermissions(
+  id: string,
+  data: {
+    role?: UserRole;
+    canPublishWords?: boolean;
+    canPublishProverbs?: boolean;
+    canPublishMedia?: boolean;
+  },
+) {
+  return prisma.user.update({ where: { id }, data });
+}
+
 export function getUserById(id: string) {
   return prisma.user.findUnique({ where: { id } });
 }

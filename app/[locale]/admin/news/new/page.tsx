@@ -1,6 +1,7 @@
 import { actionCreateNews } from '@/app/actions/news';
 import { SubmitButton } from '@/components/admin/SubmitButton';
 import { InputField, TextareaField } from '@/components/admin/FieldRow';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import { Link } from '@/i18n/navigation';
 
 export default function NewNewsPage() {
@@ -17,7 +18,7 @@ export default function NewNewsPage() {
           <TextareaField label="Body (English)" name="bodyEn" required rows={6} />
           <TextareaField label="Body (Persian / فارسی)" name="bodyFa" required rows={6} />
         </div>
-        <InputField label="Image URL" name="imageUrl" type="url" />
+        <ImageUpload name="imageUrl" label="Article image" />
         <SubmitButton label="Publish" />
       </form>
     </div>

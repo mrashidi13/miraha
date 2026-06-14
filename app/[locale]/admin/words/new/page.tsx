@@ -1,6 +1,7 @@
 import { actionCreateWord } from '@/app/actions/words';
 import { SubmitButton } from '@/components/admin/SubmitButton';
 import { InputField, TextareaField } from '@/components/admin/FieldRow';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import { Link } from '@/i18n/navigation';
 
 export default function NewWordPage() {
@@ -25,7 +26,7 @@ export default function NewWordPage() {
           <TextareaField label="Example (Persian / فارسی)" name="exampleFa" rows={2} />
         </div>
         <InputField label="Audio URL" name="audioUrl" type="url" placeholder="https://…" />
-        <InputField label="Photo URL" name="photoUrl" type="url" placeholder="https://…" />
+        <ImageUpload name="photoUrl" label="Photo" />
         <div className="pt-2">
           <SubmitButton label="Add Word" />
         </div>

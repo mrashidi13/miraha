@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { getWord } from '@/lib/db/words';
+import { getProverbsContaining } from '@/lib/db/proverbs';
 import { getFavorite } from '@/lib/db/favorites';
 import { getServerUser } from '@/lib/supabase/server';
 import { AudioPlayer } from '@/components/ui/AudioPlayer';
@@ -21,7 +22,10 @@ export default async function WordPage({ params }: { params: Promise<{ locale: s
   const [word, user] = await Promise.all([getWord(id), getServerUser()]);
   if (!word) notFound();
 
-  const isFavorited = user ? !!(await getFavorite(user.id, word.id)) : false;
+  const [isFavorited, relatedProverbs] = await Promise.all([
+    user ? getFavorite(user.id, word.id).then(Boolean) : Promise.resolve(false),
+    getProverbsContaining(word.term, word.pronunciation),
+  ]);
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-10 w-full">
@@ -77,6 +81,30 @@ export default async function WordPage({ params }: { params: Promise<{ locale: s
           </Link>{' '}
           {isFa ? 'تا این واژه را ذخیره کنید.' : 'to save this word to your favorites.'}
         </p>
+      )}
+
+      {relatedProverbs.length > 0 && (
+        <div className="mt-8">
+          <h2 className="font-heading text-lg font-semibold text-primary mb-4">
+            {isFa ? 'ضرب‌المثل‌های مرتبط' : 'Related Proverbs'}
+          </h2>
+          <div className="space-y-3">
+            {relatedProverbs.map((p) => (
+              <Link
+                key={p.id}
+                href={`/proverbs/${p.id}`}
+                className="block bg-bg border border-primary/20 rounded-xl px-4 py-3 hover:border-primary/50 hover:shadow-sm transition-all group"
+              >
+                <p className="font-heading text-sm font-semibold text-primary leading-snug mb-1 group-hover:text-primary/80 transition-colors">
+                  {isFa ? p.textFa : p.textEn}
+                </p>
+                <p className="text-xs text-text-muted font-body">
+                  {isFa ? p.meaningFa : p.meaningEn}
+                </p>
+              </Link>
+            ))}
+          </div>
+        </div>
       )}
     </div>
   );

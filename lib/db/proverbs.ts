@@ -9,6 +9,26 @@ export function getProverb(id: string) {
   return prisma.proverb.findUnique({ where: { id } });
 }
 
+export function getProverbsContaining(term: string, pronunciation?: string | null) {
+  const normalizedTerm = term.replace(/[ً-ْ]/g, '');
+  return prisma.proverb.findMany({
+    where: {
+      status: 'approved',
+      OR: [
+        { textFa: { contains: normalizedTerm } },
+        { textEn: { contains: normalizedTerm, mode: 'insensitive' } },
+        ...(pronunciation
+          ? [
+              { textEn: { contains: pronunciation, mode: 'insensitive' as const } },
+              { textFa: { contains: pronunciation } },
+            ]
+          : []),
+      ],
+    },
+    orderBy: { createdAt: 'desc' },
+  });
+}
+
 export function createProverb(data: {
   textEn: string; textFa: string;
   meaningEn: string; meaningFa: string;

@@ -4,6 +4,7 @@ import { actionUpdateNews, actionDeleteNews } from '@/app/actions/news';
 import { SubmitButton } from '@/components/admin/SubmitButton';
 import { DeleteButton } from '@/components/admin/DeleteButton';
 import { InputField, TextareaField } from '@/components/admin/FieldRow';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import { Link } from '@/i18n/navigation';
 
 export default async function EditNewsPage({ params }: { params: Promise<{ id: string }> }) {
@@ -25,7 +26,7 @@ export default async function EditNewsPage({ params }: { params: Promise<{ id: s
           <TextareaField label="Body (English)" name="bodyEn" defaultValue={n.bodyEn} required rows={6} />
           <TextareaField label="Body (Persian)" name="bodyFa" defaultValue={n.bodyFa} required rows={6} />
         </div>
-        <InputField label="Image URL" name="imageUrl" defaultValue={n.imageUrl ?? ''} type="url" />
+        <ImageUpload name="imageUrl" initialUrl={n.imageUrl ?? undefined} label="Article image" />
         <SubmitButton label="Save Changes" />
       </form>
       <form action={del}><DeleteButton /></form>

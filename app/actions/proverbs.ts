@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createProverb, updateProverb, deleteProverb } from '@/lib/db/proverbs';
 import { getServerUser } from '@/lib/supabase/server';
+import { getUserById } from '@/lib/db/users';
 
 export async function actionCreateProverb(formData: FormData) {
   const p = await createProverb({
@@ -53,8 +54,11 @@ export async function actionRejectProverb(id: string) {
 }
 
 export async function actionSuggestProverb(locale: string, formData: FormData) {
-  const user = await getServerUser();
-  if (!user) redirect(`/${locale}/login`);
+  const supabaseUser = await getServerUser();
+  if (!supabaseUser) redirect(`/${locale}/login`);
+
+  const dbUser = await getUserById(supabaseUser.id);
+  const canPublish = dbUser?.role === 'admin' || dbUser?.canPublishProverbs === true;
 
   const textEn = (formData.get('textEn') as string).trim();
   const meaningEn = (formData.get('meaningEn') as string).trim();
@@ -66,8 +70,8 @@ export async function actionSuggestProverb(locale: string, formData: FormData) {
     meaningFa: formData.get('meaningFa') as string,
     meaningEn: meaningEn || '—',
     usageFa: usageFa || undefined,
-    status: 'pending',
-    submittedById: user.id,
+    status: canPublish ? 'approved' : 'pending',
+    submittedById: supabaseUser.id,
   });
 
   redirect(`/${locale}/proverbs?suggested=1`);

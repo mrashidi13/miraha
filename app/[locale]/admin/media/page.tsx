@@ -2,15 +2,18 @@ import { getMedia, createMediaItem, deleteMediaItem } from '@/lib/db/media';
 import { revalidatePath } from 'next/cache';
 import { SubmitButton } from '@/components/admin/SubmitButton';
 import { InputField } from '@/components/admin/FieldRow';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import type { MediaType } from '@prisma/client';
 
 async function actionAddMedia(formData: FormData) {
   'use server';
+  const url = formData.get('url') as string;
+  if (!url) return;
   await createMediaItem({
     type: formData.get('type') as MediaType,
-    url: formData.get('url') as string,
+    url,
     captionEn: (formData.get('captionEn') as string) || undefined,
     captionFa: (formData.get('captionFa') as string) || undefined,
   });
@@ -32,19 +35,15 @@ export default async function AdminMediaPage() {
 
       <form action={actionAddMedia} className="bg-bg border border-primary/20 rounded-2xl p-5 mb-8 space-y-3">
         <h2 className="font-heading text-base font-semibold text-primary">Add media item</h2>
-        <div className="grid sm:grid-cols-3 gap-3">
-          <div className="flex flex-col gap-1">
-            <label className="text-xs text-text-muted font-body font-medium uppercase tracking-wider">Type</label>
-            <select name="type" className="rounded-lg border border-primary/30 px-3 py-2 font-body text-sm bg-bg focus:outline-none focus:border-primary">
-              <option value="photo">Photo</option>
-              <option value="video">Video</option>
-              <option value="audio">Audio</option>
-            </select>
-          </div>
-          <div className="sm:col-span-2">
-            <InputField label="URL" name="url" type="url" required />
-          </div>
+        <div className="flex flex-col gap-1">
+          <label className="text-xs text-text-muted font-body font-medium uppercase tracking-wider">Type</label>
+          <select name="type" className="rounded-lg border border-primary/30 px-3 py-2 font-body text-sm bg-bg focus:outline-none focus:border-primary w-40">
+            <option value="photo">Photo</option>
+            <option value="video">Video</option>
+            <option value="audio">Audio</option>
+          </select>
         </div>
+        <ImageUpload name="url" label="File / Image" />
         <div className="grid sm:grid-cols-2 gap-3">
           <InputField label="Caption (English)" name="captionEn" />
           <InputField label="Caption (Persian / فارسی)" name="captionFa" />

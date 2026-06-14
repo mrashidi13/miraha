@@ -4,6 +4,7 @@ import { actionUpdateWord, actionDeleteWord, actionApproveWord, actionRejectWord
 import { SubmitButton } from '@/components/admin/SubmitButton';
 import { DeleteButton } from '@/components/admin/DeleteButton';
 import { InputField, TextareaField } from '@/components/admin/FieldRow';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import { Link } from '@/i18n/navigation';
 
 export default async function EditWordPage({ params }: { params: Promise<{ id: string }> }) {
@@ -63,7 +64,7 @@ export default async function EditWordPage({ params }: { params: Promise<{ id: s
           <TextareaField label="Example (Persian / فارسی)" name="exampleFa" defaultValue={word.exampleFa ?? ''} rows={2} />
         </div>
         <InputField label="Audio URL" name="audioUrl" defaultValue={word.audioUrl ?? ''} type="url" />
-        <InputField label="Photo URL" name="photoUrl" defaultValue={word.photoUrl ?? ''} type="url" />
+        <ImageUpload name="photoUrl" initialUrl={word.photoUrl ?? undefined} label="Photo" />
         <div className="pt-2">
           <SubmitButton label="Save Changes" />
         </div>

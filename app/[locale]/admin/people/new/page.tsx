@@ -1,6 +1,7 @@
 import { actionCreatePerson } from '@/app/actions/people';
 import { SubmitButton } from '@/components/admin/SubmitButton';
 import { InputField } from '@/components/admin/FieldRow';
+import { ImageUpload } from '@/components/admin/ImageUpload';
 import { Link } from '@/i18n/navigation';
 
 export default function NewPersonPage() {
@@ -21,7 +22,7 @@ export default function NewPersonPage() {
           <InputField label="Location (English)" name="locationEn" />
           <InputField label="Location (Persian / فارسی)" name="locationFa" />
         </div>
-        <InputField label="Photo URL" name="photoUrl" type="url" />
+        <ImageUpload name="photoUrl" label="Photo" />
         <SubmitButton label="Add Person" />
       </form>
     </div>

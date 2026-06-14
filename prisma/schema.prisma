@@ -37,12 +37,15 @@ enum UserRole {
 // ---------------------------------------------------------------------------
 
 model User {
-  id        String   @id         // Supabase Auth UUID — set explicitly on upsert
-  email     String   @unique
-  name      String
-  role      UserRole @default(member)
-  avatarUrl String?
-  createdAt DateTime @default(now())
+  id                 String   @id         // Supabase Auth UUID — set explicitly on upsert
+  email              String   @unique
+  name               String
+  role               UserRole @default(member)
+  avatarUrl          String?
+  canPublishWords    Boolean  @default(false)
+  canPublishProverbs Boolean  @default(false)
+  canPublishMedia    Boolean  @default(false)
+  createdAt          DateTime @default(now())
 
   words     Word[]
   proverbs  Proverb[]

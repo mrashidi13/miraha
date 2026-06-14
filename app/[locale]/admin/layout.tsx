@@ -15,6 +15,7 @@ const ADMIN_LINKS = [
   { href: '/admin/hero', label: 'Hero' },
   { href: '/admin/settings', label: 'Settings' },
   { href: '/admin/appearance', label: 'Appearance' },
+  { href: '/admin/users', label: 'Users' },
 ] as const;
 
 export default async function AdminLayout({

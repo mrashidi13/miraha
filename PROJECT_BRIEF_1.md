@@ -15,6 +15,7 @@ The project is named **Miraha (میراها)** — echoing *میراث* (heritag
 ### Core principles
 - **Bilingual everywhere.** Every page works in English (LTR) and Persian (RTL). This is a property of the whole site, not one feature.
 - **Heritage first.** The dictionary, audio, news, and proverbs ship before community and tourism features.
+- **Default language is Persian (FA).** The site opens in Farsi by default (`defaultLocale: 'fa'`). English is accessible at `/en/...`.
 - **Grows weekly.** Build in phases. Every phase must end with a deployable, working site. Commit to git after every working piece so we can always roll back.
 - **Safety is not optional.** Once we store user data, we protect it (see Section 6).
 
@@ -27,116 +28,116 @@ The project is named **Miraha (میراها)** — echoing *میراث* (heritag
 | Language | TypeScript | One language front-to-back; type safety guides correct code. |
 | Framework | Next.js (App Router) | Public site, admin, and API in one project. |
 | Styling | Tailwind CSS | Fast, consistent; carries the sky-blue theme. |
-| i18n | next-intl | EN/FA routing + RTL support. |
+| i18n | next-intl | EN/FA routing + RTL support. Default locale: `fa`. |
 | Database | PostgreSQL (via Supabase) | Relational data + realtime + auth in one service. |
-| ORM | Prisma | Typed schema; works very well with Claude Code. |
+| ORM | Prisma 7.x (driver adapters) | Typed schema; `@prisma/adapter-pg`; session pooler URL. |
 | Auth | Supabase Auth | Email + Google login without hand-rolling security. |
-| File storage | Supabase Storage | Audio recordings, photos, video. |
-| Hosting | Vercel (app) + Supabase (data) | Both have free tiers to start. |
+| File storage | Supabase Storage | Photos, audio recordings, video. Bucket: `media`. |
+| Hosting | Vercel (app) + Supabase (data) | Both have free tiers to start. Live at `miraha.vercel.app`. |
 
-**Theme — "Sunlit Sky & Oasis":** the site is predominantly **pale sky blue and white**. Backgrounds alternate between white and a soft sky-blue wash; headings, labels, and section titles are sky blue. **Oasis green is reserved for buttons and interactive accents only** (primary buttons, save/add actions, the dictionary's listen button) — it does not appear in backgrounds, gradients, or body text. Headings use a warm serif (Fraunces or similar) for an archival, heirloom feel; Persian and body text use Vazirmatn. The hero is a rotating photo slideshow with a slow zoom/drift effect, a soft sun-glow, and prev/next + progress-dot controls.
+**Theme — "Sunlit Sky & Oasis":** pale sky blue and white. Headings use Fraunces serif; Persian/body uses Vazirmatn. Oasis green for buttons/accents only.
 
-**Design tokens, not hardcoded styles:** every color, font, and themeable image is read from a central theme configuration (see Section 4a), never hardcoded into components. This is what allows the whole site's look to be changed from the admin panel without touching code.
+**Design tokens, not hardcoded styles:** all colors and fonts read from `ThemeSettings` table, injected as CSS custom properties. Components use token names (`bg-primary`, `text-accent`), never hex values.
 
 ---
 
 ## 3. Features (full list)
 
-### Heritage core (build first)
-- **Dictionary** — each entry: village word, pronunciation, Persian meaning, English meaning, usage example, **audio recording**, optional photo. Searchable.
-- **Audio recordings** — recordings of words and of elders speaking/telling stories. The most irreplaceable asset.
+### Heritage core ✅ Done
+- **Dictionary** — word, pronunciation, meanings, examples, audio, photo. Searchable.
+- **Audio recordings** — per word entry.
 - **News & announcements** — image, date, title, body; bilingual.
-- **Proverbs** — the saying, its meaning, and when it's used; bilingual; optional audio.
-- **About / village history** — origin, the qanat system, notable people, life in the desert.
-- **Photo / video gallery** — village memory bank across seasons and festivals, with captions.
-- **Map & how to get here** — embedded map, directions text, points of interest.
-- **Events & festival calendar** — list of upcoming dates, titles, descriptions.
-- **People directory** — villagers and diaspora: name, role, location.
+- **Proverbs** — saying, meaning, usage; bilingual; optional audio.
+- **About / village history** — body text editable from admin.
+- **Photo / video gallery** — with captions; admin upload.
+- **Map & directions** — embed URL + directions text, editable from admin.
+- **Events & festival calendar** — upcoming dates, bilingual.
+- **People directory** — villagers + diaspora, bilingual.
+- **Hero slideshow** — rotating photos with slow zoom, prev/next, progress dots.
+- **Live homepage search** — instant client-side search across dictionary and proverbs.
+- **Related proverbs on word page** — shows proverbs containing that word's term.
+- **Theming / Appearance admin** — colors and fonts from admin panel without code changes.
 
-### Community
-- **Login & profiles** — email + Google. Roles: admin vs member.
-- **Suggest words / proverbs** — members submit; admins approve via a moderation queue.
-- **Favorites & personal word lists** — members save entries.
-- **Comments & discussion** — under dictionary entries, news, proverbs.
-- **Notifications** — suggestion approved, comment reply, news posted.
+### Community ✅ Done
+- **Login & profiles** — email + Google OAuth. Roles: `admin` | `member`.
+- **Granular user permissions** — admins can grant individual members `canPublishWords`, `canPublishProverbs`, `canPublishMedia` flags. Permission holders bypass the moderation queue.
+- **Suggest words / proverbs** — members submit; admins approve via moderation queue. Permission-holders auto-publish.
+- **Favorites & personal word lists** — members save entries; `/profile/favorites`.
+- **Admin users page** — `/admin/users` to manage roles and grant/revoke permissions.
 
-### Announcements & outreach
-- **Email newsletter** — for occasional important news.
-- **Telegram channel bot** — posts announcements automatically (free, high reach in Iran).
-- **SMS announcements** — via an Iranian gateway (e.g. Kavenegar, SMS.ir, Melipayamak). Costs per message; international providers like Twilio are unreliable to Iranian numbers. **Later phase.**
+### Image uploads ✅ Done
+- **Admin upload button** on all image fields (words, proverbs, news, media, people). Files go to Supabase Storage `media` bucket via `/api/upload`. URL field still available as fallback for remote images.
 
-### Later / optional (decide once core lives)
-- User-to-user chat (high moderation burden — followable channel may cover the need).
-- Donations / crafts shop / e-commerce (adds payment, legal, tax complexity).
-
----
-
-## 4. Data model (initial tables)
-
-These are the core tables. Claude Code should define them in the Prisma schema. Bilingual text fields are stored as separate columns (e.g. `meaningEn`, `meaningFa`) or a JSON field — prefer explicit columns for searchability.
-
-- **User** — id, email, name, role (`admin` | `member`), avatarUrl, createdAt.
-- **Word** (dictionary) — id, term (village language), pronunciation, meaningEn, meaningFa, exampleEn, exampleFa, audioUrl, photoUrl, status (`approved` | `pending`), submittedById, createdAt.
-- **Proverb** — id, textEn, textFa, meaningEn, meaningFa, usageEn, usageFa, audioUrl, status, submittedById, createdAt.
-- **News** — id, titleEn, titleFa, bodyEn, bodyFa, imageUrl, publishedAt, authorId.
-- **MediaItem** (gallery) — id, type (`photo` | `video` | `audio`), url, captionEn, captionFa, takenAt.
-- **Event** — id, titleEn, titleFa, descriptionEn, descriptionFa, startsAt, endsAt, location.
-- **Person** (directory) — id, nameEn, nameFa, roleEn, roleFa, locationEn, locationFa, photoUrl.
-- **Comment** — id, body, userId, targetType (`word` | `proverb` | `news`), targetId, createdAt.
-- **Favorite** — id, userId, wordId, createdAt.
-- **Notification** — id, userId, type, message, read, createdAt.
-- **HeroSettings** — single row: slideshow image URLs (array), eyebrowEn/Fa, titleEn/Fa, subtitleEn/Fa.
-- **MapSettings** — single row: embedUrl, directionsTextEn/Fa.
-- **AboutSettings** — single row: bodyEn, bodyFa.
-- **ThemeSettings** — single row (see 4a).
+### Pending / roadmap
+- **Comments & discussion** — schema exists (`Comment` model), UI not yet built.
+- **Notifications** — schema exists (`Notification` model), not yet wired.
+- **Interactive family tree** — see Section 9 below.
+- **Email newsletter** — sign-up form + sending.
+- **Telegram announcement bot** — posts to channel on new news.
+- **SMS announcements** — via Iranian gateway (Kavenegar / SMS.ir).
+- **Gallery upload for contributors** — users with `canPublishMedia` get a public upload page.
 
 ---
 
-## 4a. Theming system — site-wide appearance from the admin panel
+## 4. Data model
 
-**Goal:** the look of the site — colors, fonts, and key images — can be changed from the admin panel without editing code. This must be designed in from Phase 0; retrofitting it later is much more costly.
+Full Prisma schema at `prisma/schema.prisma`. Key tables:
 
-**How it works:**
-- A `ThemeSettings` table holds one row of design tokens: primary color (sky blue), accent/button color (oasis green), background tones, text colors, heading font, body font, and references to themeable images (logo, default hero slides, section backgrounds).
-- The Next.js app reads `ThemeSettings` at startup/request time and injects the values as CSS custom properties (CSS variables) at the root of the page. Tailwind config maps its color names to these CSS variables rather than fixed hex codes.
-- **Every component uses the token names** (e.g. `bg-primary`, `text-accent`) — never a hardcoded hex value. This is the rule that makes the system work; one hardcoded color is one thing the admin can no longer change.
-- The admin "Appearance" page provides color pickers for each token, font selectors, and image upload/URL fields for logo and hero images, with a live preview.
-
-**Starting values (the current "Sunlit Sky & Oasis" theme):**
-- Primary (sky blue, backgrounds/headings): pale sky blue tones.
-- Accent (buttons only): light oasis green.
-- Background: white, with a pale sky-blue wash for alternating sections.
-- Heading font: warm serif (Fraunces or similar). Body/Persian font: Vazirmatn.
-
-**Now vs. later:** start with **one editable theme row** — the admin changes it in place. The schema and component structure should make it trivial to later support multiple saved theme presets (just more rows in `ThemeSettings` plus an "active theme" pointer) without restructuring components.
+- **User** — id (Supabase UUID), email, name, role (`admin|member`), avatarUrl, `canPublishWords`, `canPublishProverbs`, `canPublishMedia`, createdAt.
+- **Word** — term, pronunciation, meaningEn/Fa, exampleEn/Fa, audioUrl, photoUrl, status (`approved|pending`), submittedById.
+- **Proverb** — textEn/Fa, meaningEn/Fa, usageEn/Fa, audioUrl, status, submittedById.
+- **News** — titleEn/Fa, bodyEn/Fa, imageUrl, publishedAt, authorId.
+- **MediaItem** — type (`photo|video|audio`), url, captionEn/Fa, takenAt.
+- **Event** — titleEn/Fa, descriptionEn/Fa, startsAt, endsAt, location.
+- **Person** — nameEn/Fa, roleEn/Fa, locationEn/Fa, photoUrl.
+- **Favorite** — userId, wordId (unique pair).
+- **Comment** — body, userId, targetType, targetId.
+- **HeroSettings / MapSettings / AboutSettings / ThemeSettings** — single-row config tables.
 
 ---
 
-## 5. Build roadmap (one phase ≈ one week)
+## 4a. Theming system
 
-**Phase 0 — Foundation.** Scaffold Next.js + TypeScript + Tailwind. Set up EN/FA routing with next-intl and RTL. Set up the **theming system**: `ThemeSettings` table (or a typed config file as a placeholder until the database exists), CSS custom properties driven from it, and Tailwind color tokens mapped to those variables — seeded with the "Sunlit Sky & Oasis" values. Connect Supabase. Initialize git and commit.
-
-**Phase 1 — Heritage content from the database.** Prisma schema for Word, Proverb, News, MediaItem, Event, Person, HeroSettings, MapSettings, AboutSettings, ThemeSettings. Public pages for dictionary (with search), proverbs, news, gallery, events, people, map, and about. Audio playback on entries. Admin pages to create/edit/delete content, manage the hero slideshow, and an **Appearance page** to edit theme colors/fonts/images. Seed with sample data.
-
-**Phase 2 — Accounts & login.** Supabase Auth (email + Google). User profiles. Admin vs member roles. Protect admin pages.
-
-**Phase 3 — Contribute & save.** Members suggest words/proverbs → pending status → admin approval queue. Favorites & personal lists.
-
-**Phase 4 — Discussion & feed.** Comments on entries. Notifications. Main news channel members follow. Email newsletter signup.
-
-**Phase 5 — Outreach & real-time.** Telegram announcement bot. SMS via Iranian gateway. (Optional, after review:) user-to-user chat with moderation.
-
-> Each phase ships a working, deployable site. Don't start a phase until the previous one is committed and working.
+`ThemeSettings` table → CSS custom properties at root → Tailwind tokens. Admin "Appearance" page edits colors/fonts without code. One active theme; schema ready for multiple presets later.
 
 ---
 
-## 6. Security rules (hold firm from Phase 2 onward)
+## 5. Build history (phases completed)
 
-- **Never commit secrets.** Passwords, API keys, database URLs, SMS/Telegram tokens go in environment variables (`.env`, git-ignored) — never in code that's committed.
-- **Don't hand-roll authentication.** Let Supabase handle password storage and login.
-- **Validate every user submission** on the server, not just in the browser.
-- **Moderation before publication.** User-suggested content stays `pending` until an admin approves it.
-- **Least privilege.** Members can't reach admin actions; check roles on the server for every protected action.
+**Phase 0 — Foundation** ✅
+Next.js + TS + Tailwind. EN/FA routing (next-intl). Theming system (ThemeSettings → CSS vars → Tailwind tokens). Hero slideshow component.
+
+**Phase 1 — Heritage content** ✅
+Full Prisma schema. Public pages for dictionary, proverbs, news, gallery, events, people, map, about. Audio playback. Admin CRUD for all content. Appearance/theme admin. Rich seed data (8 words, 8 proverbs, 3 news, 8 gallery photos, 3 events, 4 people).
+
+**Phase 2 — Accounts & login** ✅
+Supabase Auth (email + Google OAuth). User profiles. Admin vs member roles. Protected admin pages (layout guard). Login form. Auth callbacks.
+
+**Phase 3 — Contribute & save** ✅
+Member word/proverb suggestions → pending → admin approval queue. Favorites system with optimistic UI. Profile favorites page. `/dictionary/suggest` and `/proverbs/suggest` pages.
+
+**Deployment** ✅
+GitHub repo at `github.com/mrashidi13/miraha`. Vercel project at `miraha.vercel.app`. Supabase project `qrawmxltvzipjxizzive` in eu-central-1. Session pooler connection (port 5432 blocked for direct). `ADMIN_EMAIL` env var auto-assigns admin on first login.
+
+**Phase 3.5 — Homepage redesign + live search** ✅
+Homepage redesigned: hero → quick nav pills → live search (client-side, no page refresh) → gallery grid → news cards. Photos removed from dictionary cards in search results. `LiveSearch` client component.
+
+**Phase 4 (partial) — Enhancements** ✅ (this session)
+- Default locale changed to Farsi (`defaultLocale: 'fa'`).
+- Related proverbs section on word detail pages (searches textEn/textFa for the word's term).
+- 3 new vocabulary words (khashar, vasht, nareh) + 4 new proverbs that cross-reference existing words.
+- Image upload buttons on all admin forms (words, news, people, media) via Supabase Storage.
+- Granular user permissions (`canPublishWords`, `canPublishProverbs`, `canPublishMedia`) — schema, admin Users page, permission-aware suggestion actions.
+
+---
+
+## 6. Security rules (hold firm)
+
+- **Never commit secrets.** `.env` is gitignored. All keys in Vercel env vars.
+- **Don't hand-roll authentication.** Supabase handles passwords and sessions.
+- **Validate every user submission on the server.**
+- **Moderation before publication.** Suggestions stay `pending` unless the user has the relevant publish permission or is admin.
+- **Least privilege.** Members can't reach admin actions; server checks roles on every protected action.
 
 ---
 
@@ -145,18 +146,58 @@ These are the core tables. Claude Code should define them in the Prisma schema. 
 - Start each session by reading this brief.
 - Work one phase at a time; don't jump ahead.
 - Commit to git after every working piece, with a clear message.
-- When a step touches secrets, auth, payments, or deletion of data, pause and confirm the approach before proceeding.
+- When a step touches secrets, auth, payments, or deletion of data, pause and confirm.
 - Keep the bilingual EN/FA + RTL requirement in mind for every new page.
-- **No hardcoded colors, fonts, or themeable images in components** — always reference theme tokens (Section 4a). If a new component needs a new token, add it to `ThemeSettings` rather than hardcoding.
+- **No hardcoded colors, fonts, or themeable images** — always reference theme tokens.
 - Update this brief when scope changes.
 
 ---
 
-## 8. Open decisions (to resolve as we go)
+## 8. Environment variables (Vercel + local .env)
 
-- The village's actual local language name and script — currently placeholder.
-- Dictionary entry richness confirmed: word + Persian/English meaning + example + **audio** + optional photo.
+```
+DATABASE_URL            # Supabase session pooler URL (postgres.{ref}@pooler host:5432)
+NEXT_PUBLIC_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY
+ADMIN_EMAIL             # Auto-promotes to admin on first login
+NEXT_PUBLIC_APP_URL     # https://miraha.vercel.app (or http://localhost:3000 locally)
+```
+
+---
+
+## 9. Upcoming features & roadmap
+
+### Interactive family tree (Phase 5)
+
+**Recommended approach:**
+1. **Schema**: Extend `Person` model with `fatherId String?` and `motherId String?` (self-referential) — or a `PersonRelation` join table for richer relationship types (spouse, sibling, etc).
+2. **Library**: `@xyflow/react` (React Flow) — best maintained interactive canvas library for Next.js. Renders nodes as React components, edges as lines. Handles zoom, pan, drag.
+3. **Data flow**: server component fetches all persons with relations → passes to a `FamilyTree` client component → React Flow renders the graph.
+4. **Node design**: each node = person card (photo, name, role). Parents are above, children below. Clicking a node opens a side panel with full person details.
+5. **Admin**: edit mode to add/remove relationships, drag to reposition.
+
+**Estimated effort**: medium — 1-2 sessions for basic tree, more for a polished interactive experience.
+
+### Comments (Phase 4)
+- `Comment` model already in schema.
+- Need: `CommentList` + `CommentForm` components on word/proverb/news detail pages.
+- Server actions: `actionAddComment`, `actionDeleteComment` (admin only delete).
+
+### Notifications (Phase 4)
+- `Notification` model in schema.
+- Need: notification bell in header, mark-read action.
+
+### Gallery upload for contributors
+- Users with `canPublishMedia` flag get a `/gallery/upload` public page.
+- Submits to existing `actionAddMedia` with the `canPublishMedia` check.
+
+---
+
+## 10. Open decisions
+
+- Village's actual local language name and script — still placeholder.
 - SMS provider choice (Kavenegar / SMS.ir / Melipayamak) — pick when reaching Phase 5.
-- Whether full user-to-user chat is worth the moderation burden — revisit after Phase 4.
-- Real map embed URL and gallery/event photos — currently placeholders, swap in via the admin Appearance/content pages once available.
-- Whether to expand from one editable theme to multiple saved presets — revisit once the core site is stable; the data model already allows it.
+- Whether to expand from one editable theme to multiple saved presets.
+- Telegram bot token — needed when building Phase 5 announcements.
+- Real map embed URL — currently empty; admin can paste it in.
+- Admin panel language — currently English-only even when `locale=fa`. Decide if admin needs full bilingual support.
