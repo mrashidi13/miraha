@@ -2,7 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import { PrismaPg } from '@prisma/adapter-pg';
 
 function createPrismaClient() {
-  const adapter = new PrismaPg(process.env.DATABASE_URL!);
+  // max=1 prevents connection exhaustion on Supabase free tier in serverless
+  const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL!, max: 1 });
   return new PrismaClient({ adapter });
 }
 
