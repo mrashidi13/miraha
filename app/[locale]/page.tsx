@@ -3,7 +3,7 @@ import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { HeroSlideshow } from '@/components/HeroSlideshow';
 import { LiveSearch } from '@/components/ui/LiveSearch';
-import { getHero } from '@/lib/db/settings';
+import { getHero, getMap } from '@/lib/db/settings';
 import { getWords } from '@/lib/db/words';
 import { getProverbs } from '@/lib/db/proverbs';
 import { getAllNews } from '@/lib/db/news';
@@ -28,12 +28,13 @@ export default async function HomePage({
   const { locale } = await params;
   const isFa = locale === 'fa';
 
-  const [hero, words, proverbs, news, photos] = await Promise.all([
+  const [hero, words, proverbs, news, photos, mapSettings] = await Promise.all([
     getHero(),
     getWords({ status: 'approved' }),
     getProverbs('approved'),
     getAllNews(),
     getMedia('photo'),
+    getMap(),
   ]);
 
   const featuredNews = news.slice(0, 3);
@@ -171,6 +172,103 @@ export default async function HomePage({
           </div>
         </section>
       )}
+
+      {/* ── Location ─────────────────────────────────────────────────────── */}
+      <section className="bg-bg py-14 px-4">
+        <div className="max-w-5xl mx-auto">
+          <SectionHeader
+            en="Find Us"
+            fa="موقعیت روستا"
+            subEn="Located in the heart of the desert — here is how to reach us"
+            subFa="در دل بیابان — اینجاست که ما هستیم"
+            isFa={isFa}
+            href="/map"
+            linkEn="Full map & directions"
+            linkFa="نقشه کامل و مسیر"
+          />
+
+          <div className="grid md:grid-cols-2 gap-6 items-start">
+            {/* Map embed or placeholder */}
+            <div className="rounded-2xl overflow-hidden border border-primary/20 aspect-video bg-primary-light">
+              {mapSettings.embedUrl ? (
+                <iframe
+                  src={mapSettings.embedUrl}
+                  className="w-full h-full"
+                  loading="lazy"
+                  referrerPolicy="no-referrer-when-downgrade"
+                  title={isFa ? 'نقشه روستا' : 'Village map'}
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center gap-3 text-text-muted">
+                  <svg className="w-10 h-10 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                      d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+                  </svg>
+                  <p className="font-body text-sm">
+                    {isFa ? 'نقشه در پنل مدیریت تنظیم می‌شود' : 'Map configured from admin panel'}
+                  </p>
+                  <Link
+                    href="/admin/settings"
+                    className="text-xs text-accent hover:underline font-body"
+                  >
+                    {isFa ? 'تنظیم نقشه ←' : 'Set map URL →'}
+                  </Link>
+                </div>
+              )}
+            </div>
+
+            {/* Info cards */}
+            <div className="space-y-4">
+              {/* Directions */}
+              {(mapSettings.directionsTextEn || mapSettings.directionsTextFa) && (
+                <div className="bg-primary-light rounded-2xl p-5 border border-primary/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <svg className="w-4 h-4 text-primary flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                        d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <h3 className="font-heading text-sm font-semibold text-primary">
+                      {isFa ? 'راهنمای مسیر' : 'Directions'}
+                    </h3>
+                  </div>
+                  <p className="font-body text-sm text-text leading-relaxed whitespace-pre-wrap">
+                    {isFa ? mapSettings.directionsTextFa : mapSettings.directionsTextEn}
+                  </p>
+                </div>
+              )}
+
+              {/* Quick info */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="bg-primary-light rounded-xl p-4 border border-primary/20">
+                  <p className="text-xs text-text-muted font-body mb-1 uppercase tracking-wider">
+                    {isFa ? 'منطقه' : 'Region'}
+                  </p>
+                  <p className="font-heading text-sm font-semibold text-primary">
+                    {isFa ? 'ایران' : 'Iran'}
+                  </p>
+                </div>
+                <div className="bg-primary-light rounded-xl p-4 border border-primary/20">
+                  <p className="text-xs text-text-muted font-body mb-1 uppercase tracking-wider">
+                    {isFa ? 'نوع' : 'Type'}
+                  </p>
+                  <p className="font-heading text-sm font-semibold text-primary">
+                    {isFa ? 'روستای بیابانی' : 'Desert village'}
+                  </p>
+                </div>
+                <div className="bg-primary-light rounded-xl p-4 border border-primary/20 col-span-2">
+                  <p className="text-xs text-text-muted font-body mb-1 uppercase tracking-wider">
+                    {isFa ? 'آب‌رسانی' : 'Water source'}
+                  </p>
+                  <p className="font-heading text-sm font-semibold text-primary">
+                    {isFa ? 'قنات باستانی' : 'Ancient qanat system'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
 
     </>
   );
