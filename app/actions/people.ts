@@ -15,7 +15,7 @@ export async function actionCreatePerson(formData: FormData) {
     photoUrl: (formData.get('photoUrl') as string) || undefined,
   });
   revalidatePath('/[locale]/people', 'page');
-  redirect('/en/admin/people');
+  redirect('/admin/people');
 }
 
 export async function actionUpdatePerson(id: string, formData: FormData) {
@@ -29,11 +29,11 @@ export async function actionUpdatePerson(id: string, formData: FormData) {
     photoUrl: (formData.get('photoUrl') as string) || undefined,
   });
   revalidatePath('/[locale]/people', 'page');
-  redirect('/en/admin/people');
+  redirect('/admin/people');
 }
 
 export async function actionDeletePerson(id: string) {
   await deletePerson(id);
   revalidatePath('/[locale]/people', 'page');
-  redirect('/en/admin/people');
+  redirect('/admin/people');
 }

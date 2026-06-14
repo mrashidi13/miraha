@@ -18,7 +18,7 @@ export async function actionCreateProverb(formData: FormData) {
     status: 'approved',
   });
   revalidatePath('/[locale]/proverbs', 'page');
-  redirect(`/en/admin/proverbs/${p.id}`);
+  redirect(`/admin/proverbs/${p.id}`);
 }
 
 export async function actionUpdateProverb(id: string, formData: FormData) {
@@ -32,25 +32,25 @@ export async function actionUpdateProverb(id: string, formData: FormData) {
     audioUrl: (formData.get('audioUrl') as string) || undefined,
   });
   revalidatePath('/[locale]/proverbs', 'page');
-  redirect('/en/admin/proverbs');
+  redirect('/admin/proverbs');
 }
 
 export async function actionDeleteProverb(id: string) {
   await deleteProverb(id);
   revalidatePath('/[locale]/proverbs', 'page');
-  redirect('/en/admin/proverbs');
+  redirect('/admin/proverbs');
 }
 
 export async function actionApproveProverb(id: string) {
   await updateProverb(id, { status: 'approved' });
   revalidatePath('/[locale]/proverbs', 'page');
-  redirect('/en/admin/proverbs');
+  redirect('/admin/proverbs');
 }
 
 export async function actionRejectProverb(id: string) {
   await deleteProverb(id);
   revalidatePath('/[locale]/proverbs', 'page');
-  redirect('/en/admin/proverbs');
+  redirect('/admin/proverbs');
 }
 
 export async function actionSuggestProverb(locale: string, formData: FormData) {

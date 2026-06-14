@@ -43,17 +43,19 @@ export async function middleware(request: NextRequest) {
       data: { user },
     } = await supabase.auth.getUser();
 
-    // Protect /[locale]/admin — redirect unauthenticated users to login
-    const adminMatch = pathname.match(/^\/(en|fa)\/admin/);
+    // Protect admin routes. With localePrefix='as-needed', Persian admin has
+    // no prefix (/admin), English has /en/admin.
+    const adminMatch = pathname.match(/^\/(?:(en|fa)\/)?admin/);
     if (adminMatch && !user) {
-      const locale = adminMatch[1];
-      const loginUrl = new URL(`/${locale}/login`, request.url);
+      const locale = adminMatch[1]; // 'en', 'fa', or undefined (= default fa)
+      const loginPath = locale === 'en' ? '/en/login' : '/login';
+      const loginUrl = new URL(loginPath, request.url);
       loginUrl.searchParams.set('next', pathname);
-      const redirect = NextResponse.redirect(loginUrl);
+      const loginRedirect = NextResponse.redirect(loginUrl);
       supabaseResponse.cookies
         .getAll()
-        .forEach(({ name, value }) => redirect.cookies.set(name, value));
-      return redirect;
+        .forEach(({ name, value }) => loginRedirect.cookies.set(name, value));
+      return loginRedirect;
     }
   }
 

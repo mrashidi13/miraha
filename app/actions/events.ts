@@ -15,7 +15,7 @@ export async function actionCreateEvent(formData: FormData) {
     location: (formData.get('location') as string) || undefined,
   });
   revalidatePath('/[locale]/events', 'page');
-  redirect('/en/admin/events');
+  redirect('/admin/events');
 }
 
 export async function actionUpdateEvent(id: string, formData: FormData) {
@@ -29,11 +29,11 @@ export async function actionUpdateEvent(id: string, formData: FormData) {
     location: (formData.get('location') as string) || undefined,
   });
   revalidatePath('/[locale]/events', 'page');
-  redirect('/en/admin/events');
+  redirect('/admin/events');
 }
 
 export async function actionDeleteEvent(id: string) {
   await deleteEvent(id);
   revalidatePath('/[locale]/events', 'page');
-  redirect('/en/admin/events');
+  redirect('/admin/events');
 }

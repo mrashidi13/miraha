@@ -7,7 +7,7 @@ import { toggleFavorite } from '@/lib/db/favorites';
 
 export async function actionToggleFavorite(wordId: string) {
   const user = await getServerUser();
-  if (!user) redirect('/en/login');
+  if (!user) redirect('/login');
   await toggleFavorite(user.id, wordId);
   revalidatePath('/[locale]/dictionary/[id]', 'page');
   revalidatePath('/[locale]/profile/favorites', 'page');

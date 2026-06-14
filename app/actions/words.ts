@@ -19,7 +19,7 @@ export async function actionCreateWord(formData: FormData) {
     status: 'approved',
   });
   revalidatePath('/[locale]/dictionary', 'page');
-  redirect(`/en/admin/words/${word.id}`);
+  redirect(`/admin/words/${word.id}`);
 }
 
 export async function actionUpdateWord(id: string, formData: FormData) {
@@ -34,25 +34,25 @@ export async function actionUpdateWord(id: string, formData: FormData) {
     photoUrl: (formData.get('photoUrl') as string) || undefined,
   });
   revalidatePath('/[locale]/dictionary', 'page');
-  redirect('/en/admin/words');
+  redirect('/admin/words');
 }
 
 export async function actionDeleteWord(id: string) {
   await deleteWord(id);
   revalidatePath('/[locale]/dictionary', 'page');
-  redirect('/en/admin/words');
+  redirect('/admin/words');
 }
 
 export async function actionApproveWord(id: string) {
   await updateWord(id, { status: 'approved' });
   revalidatePath('/[locale]/dictionary', 'page');
-  redirect('/en/admin/words');
+  redirect('/admin/words');
 }
 
 export async function actionRejectWord(id: string) {
   await deleteWord(id);
   revalidatePath('/[locale]/dictionary', 'page');
-  redirect('/en/admin/words');
+  redirect('/admin/words');
 }
 
 export async function actionSuggestWord(locale: string, formData: FormData) {

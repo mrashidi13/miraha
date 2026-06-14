@@ -13,7 +13,7 @@ export async function actionCreateNews(formData: FormData) {
     imageUrl: (formData.get('imageUrl') as string) || undefined,
   });
   revalidatePath('/[locale]/news', 'page');
-  redirect(`/en/admin/news/${n.id}`);
+  redirect(`/admin/news/${n.id}`);
 }
 
 export async function actionUpdateNews(id: string, formData: FormData) {
@@ -25,11 +25,11 @@ export async function actionUpdateNews(id: string, formData: FormData) {
     imageUrl: (formData.get('imageUrl') as string) || undefined,
   });
   revalidatePath('/[locale]/news', 'page');
-  redirect('/en/admin/news');
+  redirect('/admin/news');
 }
 
 export async function actionDeleteNews(id: string) {
   await deleteNews(id);
   revalidatePath('/[locale]/news', 'page');
-  redirect('/en/admin/news');
+  redirect('/admin/news');
 }
