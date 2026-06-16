@@ -120,14 +120,13 @@ function PersonNode({ data }: { data: PersonNodeData }) {
   const role = isFa ? p.roleFa : p.roleEn;
   const initials = name.slice(0, 2);
 
-  const dimmed = isMatch === false;
   const highlighted = isMatch === true;
 
   return (
     <>
       <Handle type="target" position={Position.Top} className="!w-2 !h-2 !border-primary !bg-primary-light" />
       <div
-        style={{ opacity: dimmed ? 0.2 : 1, transition: 'opacity 0.2s, box-shadow 0.2s' }}
+        style={{ transition: 'box-shadow 0.2s' }}
         className={[
           'w-[180px] rounded-2xl border bg-bg shadow-sm cursor-pointer select-none transition-all',
           highlighted
