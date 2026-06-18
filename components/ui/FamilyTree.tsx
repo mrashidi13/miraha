@@ -75,7 +75,7 @@ function computeLayout(people: PersonData[], locale: string): { nodes: BaseNode[
         g.setEdge(p.motherId, p.id);
         rawEdges.push({
           id: eid, source: p.motherId, target: p.id, type: 'smoothstep',
-          style: { stroke: 'var(--color-accent)', strokeWidth: 1.5, opacity: 0.5 },
+          style: { stroke: '#f87171', strokeWidth: 1.5, opacity: 0.6 },
         });
       }
     }

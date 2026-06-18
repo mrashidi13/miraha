@@ -36,7 +36,7 @@ export function ProverbSearch({ proverbs, locale, suggestHref, showSuggest }: Pr
   }, [proverbs, query]);
 
   return (
-    <>
+    <div dir={isFa ? 'rtl' : 'ltr'}>
       <div className="flex items-center justify-between mb-6 gap-4">
         <h1 className="font-heading text-3xl font-bold text-primary">
           {isFa ? 'ضرب‌المثل‌ها' : 'Proverbs'}
@@ -101,6 +101,6 @@ export function ProverbSearch({ proverbs, locale, suggestHref, showSuggest }: Pr
           ))}
         </div>
       )}
-    </>
+    </div>
   );
 }

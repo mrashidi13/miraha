@@ -42,7 +42,7 @@ export function PeopleSearch({ people, locale, familyTreeHref, showHeader = true
   }, [people, query]);
 
   return (
-    <>
+    <div dir={isFa ? 'rtl' : 'ltr'}>
       {/* Header row */}
       {showHeader && (
         <div className="flex items-center justify-between mb-6 gap-4">
@@ -131,6 +131,6 @@ export function PeopleSearch({ people, locale, familyTreeHref, showHeader = true
           })}
         </div>
       )}
-    </>
+    </div>
   );
 }
