@@ -4,7 +4,7 @@ import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 
 const PUBLIC_NAV_KEYS = [
-  'dictionary', 'proverbs', 'news', 'gallery',
+  'dictionary', 'proverbs', 'superstitions', 'places', 'news', 'gallery',
   'events', 'map', 'about',
 ] as const;
 

@@ -17,6 +17,8 @@ const ADMIN_LINKS = [
   { href: '/admin/settings', label: 'Settings' },
   { href: '/admin/appearance', label: 'Appearance' },
   { href: '/admin/comments', label: 'Comments' },
+  { href: '/admin/superstitions', label: 'Superstitions' },
+  { href: '/admin/places', label: 'Scenic Places' },
   { href: '/admin/announcements', label: 'Announcements' },
   { href: '/admin/newsletter', label: 'Newsletter' },
   { href: '/admin/users', label: 'Users' },

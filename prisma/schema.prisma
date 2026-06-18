@@ -284,3 +284,28 @@ model ThemeSettings {
   fontHeading       String @default("var(--font-fraunces), Georgia, serif")
   fontBody          String @default("var(--font-vazirmatn), system-ui, sans-serif")
 }
+
+model Superstition {
+  id            String        @id @default(cuid())
+  textEn        String
+  textFa        String
+  explanationEn String        @default("")
+  explanationFa String        @default("")
+  category      String        @default("")
+  status        ContentStatus @default(approved)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Place {
+  id            String   @id @default(cuid())
+  nameEn        String
+  nameFa        String
+  descriptionEn String   @default("")
+  descriptionFa String   @default("")
+  lat           Float?
+  lng           Float?
+  imageUrls     String[] @default([])
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
