@@ -312,7 +312,7 @@ function FamilyTreeCanvas({ people, locale }: Props) {
               type="text"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              dir="auto"
+              dir={isFa ? 'rtl' : 'ltr'}
               placeholder={isFa ? 'جستجوی نام، نقش…' : 'Search name, role…'}
               className="w-full ps-9 pe-8 py-2 rounded-xl border border-primary/30 bg-bg/95 backdrop-blur-sm shadow-sm font-body text-sm text-text placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
             />

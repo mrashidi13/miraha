@@ -59,7 +59,7 @@ export function ProverbSearch({ proverbs, locale, suggestHref, showSuggest }: Pr
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          dir="auto"
+          dir={isFa ? 'rtl' : 'ltr'}
           placeholder={isFa ? 'جستجو در ضرب‌المثل‌ها…' : 'Search proverbs…'}
           className="w-full ps-9 pe-9 py-2.5 rounded-xl border border-primary/30 bg-bg font-body text-sm text-text placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
         />
