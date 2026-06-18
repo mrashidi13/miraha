@@ -3,10 +3,12 @@
 import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
 
-const NAV_KEYS = [
+const PUBLIC_NAV_KEYS = [
   'dictionary', 'proverbs', 'news', 'gallery',
-  'events', 'people', 'map', 'about',
+  'events', 'map', 'about',
 ] as const;
+
+const AUTH_NAV_KEYS = ['people'] as const;
 
 interface Props {
   userEmail?: string | null;
@@ -33,7 +35,16 @@ export function SiteHeader({ userEmail, isAdmin }: Props) {
         </Link>
 
         <nav className="hidden md:flex items-center gap-1 overflow-x-auto">
-          {NAV_KEYS.map((key) => (
+          {PUBLIC_NAV_KEYS.map((key) => (
+            <Link
+              key={key}
+              href={`/${key}`}
+              className="px-3 py-1.5 rounded-lg text-sm font-body text-text hover:bg-primary-light hover:text-primary transition-colors whitespace-nowrap"
+            >
+              {t(key)}
+            </Link>
+          ))}
+          {userEmail && AUTH_NAV_KEYS.map((key) => (
             <Link
               key={key}
               href={`/${key}`}
