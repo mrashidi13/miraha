@@ -302,7 +302,7 @@ function FamilyTreeCanvas({ people, locale }: Props) {
         />
 
         {/* Search panel — top-center */}
-        <Panel position="top-center" className="mt-3 w-72">
+        <Panel position="top-center" className="mt-3 w-48 sm:w-72">
           <div className="relative">
             <svg className="absolute start-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -336,15 +336,15 @@ function FamilyTreeCanvas({ people, locale }: Props) {
           )}
         </Panel>
 
-        {/* Legend — top-left */}
-        <Panel position="top-left" className="m-3">
+        {/* Legend — bottom-left (avoids overlap with top search bar on mobile) */}
+        <Panel position="bottom-left" className="m-3">
           <div className="flex gap-3 items-center bg-bg/90 backdrop-blur-sm border border-primary/20 rounded-xl px-3 py-2 shadow-sm text-[10px] font-body text-text-muted">
             <span className="flex items-center gap-1.5">
               <span className="w-5 h-0.5 bg-primary/60 rounded inline-block" />
               {isFa ? 'پدر' : 'Father'}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-5 h-0.5 rounded inline-block" style={{ backgroundColor: '#f87171', opacity: 0.8 }} />
+              <span className="w-5 h-0.5 rounded inline-block" style={{ backgroundColor: '#f87171' }} />
               {isFa ? 'مادر' : 'Mother'}
             </span>
             {searchTerm && matchCount > 0 && (
