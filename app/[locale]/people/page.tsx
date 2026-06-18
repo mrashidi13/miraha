@@ -1,6 +1,6 @@
 import { getTranslations } from 'next-intl/server';
-import { getPeople } from '@/lib/db/people';
-import { PeopleSearch } from '@/components/ui/PeopleSearch';
+import { getPeopleWithRelations } from '@/lib/db/people';
+import { PeopleView } from '@/components/ui/PeopleView';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
@@ -11,12 +11,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
 
 export default async function PeoplePage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale } = await params;
-  const people = await getPeople();
-  const familyTreeHref = '/family-tree';
+  const people = await getPeopleWithRelations();
 
-  return (
-    <div className="max-w-4xl mx-auto px-4 py-10 w-full">
-      <PeopleSearch people={people} locale={locale} familyTreeHref={familyTreeHref} />
-    </div>
-  );
+  return <PeopleView people={people} locale={locale} />;
 }

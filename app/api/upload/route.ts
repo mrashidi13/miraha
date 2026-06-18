@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
+import { getServiceClient } from '@/lib/supabase/service';
 import { getUserById } from '@/lib/db/users';
 
 export async function POST(request: Request) {
@@ -25,7 +26,9 @@ export async function POST(request: Request) {
   const path = `uploads/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
 
   const bytes = await file.arrayBuffer();
-  const { data, error } = await supabase.storage
+  // Use service role client to bypass storage RLS
+  const adminStorage = getServiceClient().storage;
+  const { data, error } = await adminStorage
     .from('media')
     .upload(path, bytes, { contentType: file.type, upsert: false });
 
@@ -33,6 +36,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const { data: { publicUrl } } = supabase.storage.from('media').getPublicUrl(data.path);
+  const { data: { publicUrl } } = adminStorage.from('media').getPublicUrl(data.path);
   return NextResponse.json({ url: publicUrl });
 }

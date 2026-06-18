@@ -198,14 +198,49 @@ model Comment {
 // ---------------------------------------------------------------------------
 
 model HeroSettings {
-  id         Int      @id @default(1)
-  imageUrls  String[] @default([])
-  eyebrowEn  String   @default("Welcome to our village")
-  eyebrowFa  String   @default("به روستای ما خوش آمدید")
-  titleEn    String   @default("Miraha")
-  titleFa    String   @default("میراها")
-  subtitleEn String   @default("Preserving the language and memory of our village")
-  subtitleFa String   @default("پاسداری از زبان و خاطرات روستای ما")
+  id               Int         @id @default(1)
+  rotationInterval Int         @default(5000)
+  // Legacy global text fields — kept for one-time migration to HeroSlide
+  imageUrls        String[]    @default([])
+  eyebrowEn        String      @default("Welcome to our village")
+  eyebrowFa        String      @default("به روستای ما خوش آمدید")
+  titleEn          String      @default("Miraha")
+  titleFa          String      @default("میراها")
+  subtitleEn       String      @default("Preserving the language and memory of our village")
+  subtitleFa       String      @default("پاسداری از زبان و خاطرات روستای ما")
+  slides           HeroSlide[]
+}
+
+model HeroSlide {
+  id         String       @id @default(cuid())
+  imageUrl   String
+  eyebrowEn  String       @default("")
+  eyebrowFa  String       @default("")
+  titleEn    String       @default("")
+  titleFa    String       @default("")
+  subtitleEn String       @default("")
+  subtitleFa String       @default("")
+  order      Int          @default(0)
+  heroId     Int          @default(1)
+  hero       HeroSettings @relation(fields: [heroId], references: [id])
+}
+
+enum AnnouncementType {
+  general
+  death
+  urgent
+}
+
+model Announcement {
+  id        String           @id @default(cuid())
+  titleEn   String
+  titleFa   String
+  bodyEn    String?
+  bodyFa    String?
+  type      AnnouncementType @default(general)
+  active    Boolean          @default(true)
+  expiresAt DateTime?
+  createdAt DateTime         @default(now())
 }
 
 model CommentSettings {

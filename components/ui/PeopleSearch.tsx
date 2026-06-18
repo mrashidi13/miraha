@@ -19,9 +19,10 @@ interface Props {
   people: Person[];
   locale: string;
   familyTreeHref: string;
+  showHeader?: boolean;
 }
 
-export function PeopleSearch({ people, locale, familyTreeHref }: Props) {
+export function PeopleSearch({ people, locale, familyTreeHref, showHeader = true }: Props) {
   const isFa = locale === 'fa';
   const [query, setQuery] = useState('');
 
@@ -43,20 +44,22 @@ export function PeopleSearch({ people, locale, familyTreeHref }: Props) {
   return (
     <>
       {/* Header row */}
-      <div className="flex items-center justify-between mb-6 gap-4">
-        <h1 className="font-heading text-3xl font-bold text-primary">
-          {isFa ? 'مردم' : 'People Directory'}
-        </h1>
-        <Link
-          href={familyTreeHref as Parameters<typeof Link>[0]['href']}
-          className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-light border border-primary/30 text-sm font-body text-primary hover:border-primary/60 hover:shadow-sm transition-all"
-        >
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
-          </svg>
-          {isFa ? 'درخت خانوادگی' : 'Family Tree'}
-        </Link>
-      </div>
+      {showHeader && (
+        <div className="flex items-center justify-between mb-6 gap-4">
+          <h1 className="font-heading text-3xl font-bold text-primary">
+            {isFa ? 'مردم' : 'People Directory'}
+          </h1>
+          <Link
+            href={familyTreeHref as Parameters<typeof Link>[0]['href']}
+            className="flex-shrink-0 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary-light border border-primary/30 text-sm font-body text-primary hover:border-primary/60 hover:shadow-sm transition-all"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            {isFa ? 'درخت خانوادگی' : 'Family Tree'}
+          </Link>
+        </div>
+      )}
 
       {/* Search input */}
       <div className="relative mb-6">

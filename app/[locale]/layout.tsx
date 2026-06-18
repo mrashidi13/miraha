@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages, getTranslations } from 'next-intl/server';
 import { notFound } from 'next/navigation';
-import { Fraunces, Vazirmatn } from 'next/font/google';
+import { Fraunces, Playfair_Display, Vazirmatn } from 'next/font/google';
 import { routing } from '@/i18n/routing';
 import { buildThemeCssVars } from '@/lib/theme';
 import { getTheme } from '@/lib/db/settings';
@@ -16,6 +16,12 @@ import '../globals.css';
 const fraunces = Fraunces({
   subsets: ['latin'],
   variable: '--font-fraunces',
+  display: 'swap',
+});
+
+const playfair = Playfair_Display({
+  subsets: ['latin'],
+  variable: '--font-playfair',
   display: 'swap',
 });
 
@@ -62,7 +68,7 @@ export default async function LocaleLayout({
   const isAdmin = dbUser?.role === 'admin';
 
   return (
-    <html lang={locale} dir={dir} className={`${fraunces.variable} ${vazirmatn.variable}`}>
+    <html lang={locale} dir={dir} className={`${fraunces.variable} ${playfair.variable} ${vazirmatn.variable}`}>
       <head>
         <style>{`:root { ${themeVars}; }`}</style>
       </head>

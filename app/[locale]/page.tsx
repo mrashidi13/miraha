@@ -3,12 +3,13 @@ import { Link } from '@/i18n/navigation';
 import Image from 'next/image';
 import { HeroSlideshow } from '@/components/HeroSlideshow';
 import { LiveSearch } from '@/components/ui/LiveSearch';
-import { getHero, getMap } from '@/lib/db/settings';
+import { getHeroWithSlides, getMap } from '@/lib/db/settings';
 import { getWords } from '@/lib/db/words';
 import { getProverbs } from '@/lib/db/proverbs';
 import { getAllNews } from '@/lib/db/news';
 import { getMedia } from '@/lib/db/media';
 import { getAlbums } from '@/lib/db/albums';
+import { getActiveAnnouncements } from '@/lib/db/announcements';
 import type { Metadata } from 'next';
 
 export async function generateMetadata({
@@ -29,14 +30,15 @@ export default async function HomePage({
   const { locale } = await params;
   const isFa = locale === 'fa';
 
-  const [hero, words, proverbs, news, photos, albums, mapSettings] = await Promise.all([
-    getHero(),
+  const [hero, words, proverbs, news, photos, albums, mapSettings, announcements] = await Promise.all([
+    getHeroWithSlides(),
     getWords({ status: 'approved' }),
     getProverbs('approved'),
     getAllNews(),
     getMedia('photo'),
     getAlbums(),
     getMap(),
+    getActiveAnnouncements(),
   ]);
 
   const featuredNews = news.slice(0, 3);
@@ -47,11 +49,65 @@ export default async function HomePage({
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <HeroSlideshow
-        images={hero.imageUrls}
-        eyebrow={isFa ? hero.eyebrowFa : hero.eyebrowEn}
-        title={isFa ? hero.titleFa : hero.titleEn}
-        subtitle={isFa ? hero.subtitleFa : hero.subtitleEn}
+        slides={hero.slides}
+        rotationInterval={hero.rotationInterval}
+        locale={locale}
+        legacyImages={hero.imageUrls}
+        legacyEyebrow={isFa ? hero.eyebrowFa : hero.eyebrowEn}
+        legacyTitle={isFa ? hero.titleFa : hero.titleEn}
+        legacySubtitle={isFa ? hero.subtitleFa : hero.subtitleEn}
       />
+
+      {/* ── Announcements ────────────────────────────────────────────────── */}
+      {announcements.length > 0 && (
+        <section className="bg-bg px-4 pt-6 pb-2">
+          <div className="max-w-4xl mx-auto space-y-3">
+            {announcements.map((a) => {
+              const isUrgent = a.type === 'urgent';
+              const isDeath = a.type === 'death';
+              const bg = isUrgent
+                ? 'bg-amber-50 border-amber-300'
+                : isDeath
+                ? 'bg-red-50 border-red-300'
+                : 'bg-primary-light border-primary/30';
+              const textColor = isUrgent
+                ? 'text-amber-800'
+                : isDeath
+                ? 'text-red-800'
+                : 'text-primary';
+              const badge = isUrgent
+                ? (isFa ? 'فوری' : 'Urgent')
+                : isDeath
+                ? (isFa ? 'درگذشت' : 'Death Notice')
+                : (isFa ? 'اطلاعیه' : 'Notice');
+              const badgeBg = isUrgent
+                ? 'bg-amber-200 text-amber-800'
+                : isDeath
+                ? 'bg-red-200 text-red-800'
+                : 'bg-primary/10 text-primary';
+              return (
+                <div key={a.id} className={`rounded-2xl border px-5 py-4 ${bg}`}>
+                  <div className="flex items-start gap-3">
+                    <span className={`flex-shrink-0 text-xs font-body font-semibold px-2 py-0.5 rounded-full mt-0.5 ${badgeBg}`}>
+                      {badge}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-heading font-semibold ${textColor}`}>
+                        {isFa ? a.titleFa : a.titleEn}
+                      </p>
+                      {(a.bodyEn || a.bodyFa) && (
+                        <p className={`text-sm font-body mt-1 ${textColor} opacity-80`}>
+                          {isFa ? a.bodyFa : a.bodyEn}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       {/* ── Quick nav ─────────────────────────────────────────────────────── */}
       <section className="bg-bg py-8 px-4 border-b border-primary/10">

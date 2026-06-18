@@ -1,5 +1,5 @@
 import { prisma } from '@/lib/prisma';
-import type { ThemeSettings, HeroSettings, MapSettings, AboutSettings, CommentSettings } from '@prisma/client';
+import type { ThemeSettings, HeroSettings, MapSettings, AboutSettings, CommentSettings, HeroSlide } from '@prisma/client';
 
 // ---- Theme ----
 export async function getTheme(): Promise<ThemeSettings> {
@@ -28,6 +28,35 @@ export function updateHero(data: Partial<Omit<HeroSettings, 'id'>>) {
     where: { id: 1 },
     update: data,
     create: { id: 1, ...data },
+  });
+}
+
+export async function getHeroWithSlides(): Promise<HeroSettings & { slides: HeroSlide[] }> {
+  const row = await prisma.heroSettings.findUnique({
+    where: { id: 1 },
+    include: { slides: { orderBy: { order: 'asc' } } },
+  });
+  if (row) return row;
+  return prisma.heroSettings.create({ data: { id: 1 }, include: { slides: true } });
+}
+
+export function createHeroSlide(data: Omit<HeroSlide, 'id' | 'heroId'>) {
+  return prisma.heroSlide.create({ data: { ...data, heroId: 1 } });
+}
+
+export function updateHeroSlide(id: string, data: Partial<Omit<HeroSlide, 'id' | 'heroId'>>) {
+  return prisma.heroSlide.update({ where: { id }, data });
+}
+
+export function deleteHeroSlide(id: string) {
+  return prisma.heroSlide.delete({ where: { id } });
+}
+
+export function updateRotationInterval(rotationInterval: number) {
+  return prisma.heroSettings.upsert({
+    where: { id: 1 },
+    update: { rotationInterval },
+    create: { id: 1, rotationInterval },
   });
 }
 

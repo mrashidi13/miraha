@@ -86,6 +86,74 @@ export default async function AppearancePage() {
           </div>
         </div>
 
+        {/* Fonts */}
+        <div className="space-y-4 pt-4 border-t border-primary/10">
+          <h2 className="font-heading text-base font-semibold text-primary">Fonts</h2>
+
+          <div className="space-y-4">
+            <div>
+              <label className="text-xs text-text-muted font-body font-medium uppercase tracking-wider block mb-2">
+                Heading Font (EN titles, section headers)
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: 'var(--font-fraunces), Georgia, serif', label: 'Fraunces', preview: 'Elegant Heritage' },
+                  { value: 'var(--font-playfair), Georgia, serif', label: 'Playfair Display', preview: 'Classic Editorial' },
+                  { value: "Georgia, 'Times New Roman', serif", label: 'Georgia', preview: 'Classic Serif' },
+                  { value: 'system-ui, -apple-system, sans-serif', label: 'System Sans', preview: 'Modern Clean' },
+                ].map(({ value, label, preview }) => (
+                  <label
+                    key={value}
+                    className="flex items-start gap-2 p-3 rounded-xl border border-primary/20 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary-light transition-colors"
+                  >
+                    <input
+                      type="radio"
+                      name="fontHeading"
+                      value={value}
+                      defaultChecked={theme.fontHeading === value}
+                      className="mt-0.5 accent-primary"
+                    />
+                    <div>
+                      <p className="text-sm font-body text-text font-medium">{label}</p>
+                      <p className="text-xs text-text-muted font-body">{preview}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs text-text-muted font-body font-medium uppercase tracking-wider block mb-2">
+                Body Font (FA + EN body text, UI)
+              </label>
+              <div className="grid grid-cols-2 gap-2">
+                {[
+                  { value: 'var(--font-vazirmatn), system-ui, sans-serif', label: 'Vazirmatn', preview: 'Modern Persian (default)' },
+                  { value: "'Tahoma', Vazir, Arial, sans-serif", label: 'Tahoma', preview: 'Traditional Persian' },
+                  { value: 'system-ui, -apple-system, sans-serif', label: 'System', preview: 'OS default' },
+                ].map(({ value, label, preview }) => (
+                  <label
+                    key={value}
+                    className="flex items-start gap-2 p-3 rounded-xl border border-primary/20 cursor-pointer has-[:checked]:border-primary has-[:checked]:bg-primary-light transition-colors"
+                  >
+                    <input
+                      type="radio"
+                      name="fontBody"
+                      value={value}
+                      defaultChecked={theme.fontBody === value}
+                      className="mt-0.5 accent-primary"
+                    />
+                    <div>
+                      <p className="text-sm font-body text-text font-medium">{label}</p>
+                      <p className="text-xs text-text-muted font-body">{preview}</p>
+                    </div>
+                  </label>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
         <SubmitButton label="Apply Theme" />
       </form>
     </div>
