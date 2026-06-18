@@ -75,7 +75,7 @@ export function LiveSearch({ words, proverbs, locale }: Props) {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              dir="auto"
+              dir={isFa ? 'rtl' : 'ltr'}
               placeholder={isFa ? 'مثلاً: لرگ، باران، قنات…' : 'e.g. breeze, water, desert…'}
               className="w-full rounded-xl border border-primary/30 bg-bg ps-12 pe-4 py-3.5 text-base font-body text-text placeholder:text-text-muted focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/30 transition-colors"
             />
