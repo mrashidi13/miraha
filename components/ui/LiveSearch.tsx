@@ -52,7 +52,7 @@ export function LiveSearch({ words, proverbs, locale }: Props) {
   const noResults = q && filteredWords.length === 0 && filteredProverbs.length === 0;
 
   return (
-    <section className="bg-primary-light py-14 px-4">
+    <section className="bg-primary-light py-14 px-4" dir={isFa ? 'rtl' : 'ltr'}>
       <div className="max-w-5xl mx-auto">
         {/* Header + search input */}
         <div className="mb-8">
