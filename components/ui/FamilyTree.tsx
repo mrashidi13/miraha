@@ -344,7 +344,7 @@ function FamilyTreeCanvas({ people, locale }: Props) {
               {isFa ? 'پدر' : 'Father'}
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-5 h-0.5 bg-accent/60 rounded inline-block" />
+              <span className="w-5 h-0.5 rounded inline-block" style={{ backgroundColor: '#f87171', opacity: 0.8 }} />
               {isFa ? 'مادر' : 'Mother'}
             </span>
             {searchTerm && matchCount > 0 && (
