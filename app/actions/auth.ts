@@ -11,6 +11,23 @@ function homePath(locale: string) {
   return locale === 'en' ? '/en' : '/';
 }
 
+// Used by the header dropdown — returns error string instead of redirecting
+export async function actionSignInWithEmailInline(
+  email: string,
+  password: string,
+  locale: string,
+): Promise<{ error: string } | null> {
+  const supabase = await createClient();
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+  if (error || !data.user) return { error: error?.message ?? 'Login failed' };
+  const name =
+    data.user.user_metadata?.full_name ??
+    data.user.user_metadata?.name ??
+    email.split('@')[0];
+  await upsertUserFromAuth(data.user.id, email, name);
+  return null;
+}
+
 export async function actionSignInWithEmail(formData: FormData) {
   const email = formData.get('email') as string;
   const password = formData.get('password') as string;

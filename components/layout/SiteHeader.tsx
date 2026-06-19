@@ -3,6 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useTranslations, useLocale } from 'next-intl';
 import { Link, usePathname, useRouter } from '@/i18n/navigation';
+import { UserMenu } from '@/components/ui/UserMenu';
+import { LoginDropdown } from '@/components/ui/LoginDropdown';
 
 const PUBLIC_NAV_KEYS = [
   'dictionary', 'proverbs', 'superstitions', 'places', 'news', 'gallery',
@@ -95,30 +97,11 @@ export function SiteHeader({ userEmail, isAdmin }: Props) {
             </button>
 
             {userEmail ? (
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/profile"
-                  className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-white text-sm font-heading font-bold hover:bg-primary/80 transition-colors"
-                  title={userEmail}
-                >
-                  {userEmail.charAt(0).toUpperCase()}
-                </Link>
-                {isAdmin && (
-                  <Link
-                    href="/admin"
-                    className="hidden sm:inline-block px-3 py-1 rounded-lg bg-accent text-white text-xs font-body hover:bg-accent-hover transition-colors"
-                  >
-                    Admin
-                  </Link>
-                )}
-              </div>
+              <UserMenu email={userEmail} isAdmin={!!isAdmin} locale={locale} />
             ) : (
-              <Link
-                href="/login"
-                className="hidden sm:inline-block px-3 py-1.5 rounded-lg bg-accent text-white text-sm font-body hover:bg-accent-hover transition-colors"
-              >
-                {isFa ? 'ورود' : 'Login'}
-              </Link>
+              <div className="hidden sm:block">
+                <LoginDropdown locale={locale} />
+              </div>
             )}
 
             {/* Hamburger — mobile only */}
@@ -178,26 +161,9 @@ export function SiteHeader({ userEmail, isAdmin }: Props) {
             </button>
 
             {userEmail ? (
-              <div className="flex items-center gap-2">
-                <Link href="/profile" className="flex items-center gap-2 px-3 py-2 rounded-xl bg-primary-light border border-primary/20 text-sm font-body text-primary hover:border-primary/50 transition-colors">
-                  <span className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-white text-xs font-heading font-bold">
-                    {userEmail.charAt(0).toUpperCase()}
-                  </span>
-                  <span className="max-w-[120px] truncate text-xs">{userEmail}</span>
-                </Link>
-                {isAdmin && (
-                  <Link href="/admin" className="px-3 py-2 rounded-xl bg-accent text-white text-xs font-body hover:bg-accent-hover transition-colors">
-                    Admin
-                  </Link>
-                )}
-              </div>
+              <UserMenu email={userEmail} isAdmin={!!isAdmin} locale={locale} />
             ) : (
-              <Link
-                href="/login"
-                className="px-5 py-2 rounded-xl bg-accent text-white text-sm font-body hover:bg-accent-hover transition-colors"
-              >
-                {isFa ? 'ورود' : 'Login'}
-              </Link>
+              <LoginDropdown locale={locale} />
             )}
           </div>
         </div>
