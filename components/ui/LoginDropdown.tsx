@@ -56,7 +56,7 @@ export function LoginDropdown({ locale }: Props) {
 
       {open && (
         <div
-          className="absolute top-11 right-0 z-50 w-72 bg-bg border border-primary/20 rounded-2xl shadow-xl overflow-hidden"
+          className="absolute top-11 end-0 z-50 w-72 bg-bg border border-primary/20 rounded-2xl shadow-xl overflow-hidden"
           dir={isFa ? 'rtl' : 'ltr'}
         >
           <div className="px-4 py-3 border-b border-primary/10 bg-primary-light">

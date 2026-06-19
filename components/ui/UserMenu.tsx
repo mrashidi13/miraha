@@ -42,7 +42,7 @@ export function UserMenu({ email, isAdmin, locale }: Props) {
 
       {open && (
         <div
-          className={`absolute top-11 z-50 w-56 bg-bg border border-primary/20 rounded-2xl shadow-xl overflow-hidden ${isFa ? 'right-0' : 'right-0'}`}
+          className="absolute top-11 end-0 z-50 w-56 bg-bg border border-primary/20 rounded-2xl shadow-xl overflow-hidden"
           dir={isFa ? 'rtl' : 'ltr'}
         >
           {/* User info */}
